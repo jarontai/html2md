@@ -3,14 +3,14 @@ import 'package:html/dom.dart';
 
 main() {
   var document = parse(
-      '''<body>Hello world! <a href="www.html5rocks.com">HTML5 rocks! <ul> 
+      '''<text>Hello world! <a href="www.html5rocks.com">HTML5 rocks! <ul> 
         <li>1</li>
         <li class="cl2">2</li>
         </ul>
         <img alt="hh">
-        </body>
+        </text>
       ''');
-  print(document.getElementsByClassName('cl2')[0].firstChild);
+  print(document.getElementsByTagName('text')[0].innerHtml);
   print(document.getElementsByTagName('img')[0].attributes['alt']);
 
   String clazz = 'language-javascript';

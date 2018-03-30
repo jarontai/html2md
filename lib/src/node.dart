@@ -1,16 +1,20 @@
+import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart' as dom;
+
+import 'utils.dart' as util;
 
 class Node {
   dom.Element _el;
 
   Node firstChild;
 
-  Node.domNode(dom.Node node) {
-    _el = node as dom.Element;
-    firstChild = new Node.domNode(_el.firstChild);
+  Node(dom.Node domNode) {
+    _el = domNode as dom.Element;
+    firstChild = new Node(_el.firstChild);
   }
 
-  bool get hasSiblings => (_el.nextElementSibling != null) || (_el.previousElementSibling != null);
+  bool get hasSiblings =>
+      (_el.nextElementSibling != null) || (_el.previousElementSibling != null);
 
   String get className => _el.className;
 
@@ -35,6 +39,66 @@ class Node {
   String getParentAttribute(String name) {
     return _el.parent.attributes[name];
   }
+
+  bool get isBlock => util.isBlock(this);
+
+  bool get isBlank {
+    return ['A', 'TH', 'TD'].indexOf(nodeName) == -1 &&
+        new RegExp(r'^\s*$', caseSensitive: false).hasMatch(textContent) &&
+        !util.isVoid(this) &&
+        !_hasVoid();
+  }
+
+  bool _hasVoid() {
+    return _el.querySelectorAll(util.kVoidElements.join(',')).isNotEmpty;
+  }
+
+  Map get flankingWhitespace {
+    var result = {};
+    if (!isBlock) {
+      var hasLeading = new RegExp(r'^[ \r\n\t]').hasMatch(textContent);
+      var hasTrailing = new RegExp(r'[ \r\n\t]$').hasMatch(textContent);
+
+      if (hasLeading && !isFlankedByWhitespace('left')) {
+        result['leading'] = ' ';
+      }
+      if (hasTrailing && !isFlankedByWhitespace('right')) {
+        result['trailing'] = ' ';
+      }
+    }
+    return result;
+  }
+
+  bool isFlankedByWhitespace(String side) {
+    dom.Element sibling;
+    RegExp regExp;
+    bool isFlanked;
+
+    if (side == 'left') {
+      sibling = _el.previousElementSibling;
+      regExp = new RegExp(r' $');
+    } else {
+      sibling = _el.nextElementSibling;
+      regExp = new RegExp(r'^ ');
+    }
+
+    if (sibling != null) {
+      if (sibling.nodeType == 3) {
+        isFlanked = regExp.hasMatch(sibling.innerHtml);
+      } else if (sibling.nodeType == 1 &&
+          !util.isBlock(new Node(sibling))) {
+        isFlanked = regExp.hasMatch(sibling.text);
+      }
+    }
+    return isFlanked;
+  }
 }
 
-class RootNode {}
+class RootNode {
+  Node root;
+
+  RootNode(String input) {
+    var doc = parse('<x-html2md id="html2md-root">' + input + '</x-html2md>');
+    root = new Node(doc.getElementById('html2md-root'));
+  }
+}

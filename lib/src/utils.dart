@@ -1,4 +1,5 @@
-import 'package:html/dom.dart';
+import 'package:html/dom.dart' as dom;
+import 'node.dart';
 
 String repeat(String content, int times) {
   return new List.filled(times, content).join();
@@ -76,10 +77,10 @@ const kVoidElements = const [
 ];
 
 bool isBlock(Node node) {
-  return kBlockElements.indexOf((node as Element).localName.toLowerCase()) !=
+  return kBlockElements.indexOf(node.localName.toLowerCase()) !=
       -1;
 }
 
 bool isVoid(Node node) {
-  return kVoidElements.indexOf((node as Element).localName.toLowerCase()) != -1;
+  return kVoidElements.indexOf(node.localName.toLowerCase()) != -1;
 }
