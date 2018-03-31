@@ -5,6 +5,7 @@ import 'utils.dart' as util;
 
 class Node {
   dom.Element _el;
+  dom.Element get el => _el;
 
   Node firstChild;
 
@@ -40,17 +41,13 @@ class Node {
     return _el.parent.attributes[name];
   }
 
-  bool get isBlock => util.isBlock(this);
+  bool get isBlock => util.isBlock(_el);
 
   bool get isBlank {
     return ['A', 'TH', 'TD'].indexOf(nodeName) == -1 &&
         new RegExp(r'^\s*$', caseSensitive: false).hasMatch(textContent) &&
-        !util.isVoid(this) &&
-        !_hasVoid();
-  }
-
-  bool _hasVoid() {
-    return _el.querySelectorAll(util.kVoidElements.join(',')).isNotEmpty;
+        !util.isVoid(_el) &&
+        !util.hasVoid(_el);
   }
 
   Map get flankingWhitespace {
@@ -85,8 +82,7 @@ class Node {
     if (sibling != null) {
       if (sibling.nodeType == 3) {
         isFlanked = regExp.hasMatch(sibling.innerHtml);
-      } else if (sibling.nodeType == 1 &&
-          !util.isBlock(new Node(sibling))) {
+      } else if (sibling.nodeType == 1 && !util.isBlock(sibling)) {
         isFlanked = regExp.hasMatch(sibling.text);
       }
     }
