@@ -1,6 +1,10 @@
 import 'node.dart';
 import 'utils.dart' as util;
 
+typedef String Replacement(String content, Node node, Map options);
+typedef bool FilterFn(Node node, Map options);
+typedef String Append(Map options);
+
 enum RuleType {
   paragraph,
   lineBreak,
@@ -19,10 +23,6 @@ enum RuleType {
   image,
 }
 
-typedef String Replacement(String content, Node node, Map options);
-typedef bool FilterFn(Node node, Map options);
-typedef String Append(Map options);
-
 class Filter {
   List<String> filters;
   FilterFn filterFn;
@@ -35,33 +35,31 @@ class Filter {
 
   Filter.fn(this.filterFn);
 
-  invoke(Node node) {
+  apply(Node node) {
     // TODO: invoke filter
   }
 }
 
-final List<String> _references = [];
-
-class CommonMarkRule {
+class Rule {
   final Filter filter;
   final Replacement replacement;
   final Append append;
 
-  CommonMarkRule(this.filter, this.replacement, {this.append});
+  Rule(this.filter, this.replacement, {this.append});
 }
 
-var commonMarkRules = <RuleType, CommonMarkRule>{
-  RuleType.paragraph:
-      new CommonMarkRule(new Filter('p'), (content, node, options) {
+final List<String> _linkReferences = [];
+
+final commonMarkRules = <RuleType, Rule>{
+  RuleType.paragraph: new Rule(new Filter('p'), (content, node, options) {
     return '\n\n$content\n\n';
   }),
-  RuleType.lineBreak:
-      new CommonMarkRule(new Filter('br'), (content, node, options) {
+  RuleType.lineBreak: new Rule(new Filter('br'), (content, node, options) {
     // TODO: options
     return '${options['br']}\n';
   }),
   RuleType.heading:
-      new CommonMarkRule(new Filter.list(['h1', 'h2', 'h3', 'h4', 'h5', 'h6']),
+      new Rule(new Filter.list(['h1', 'h2', 'h3', 'h4', 'h5', 'h6']),
           (content, node, options) {
     // TODO: options
     var hLevel = int.parse(node.nodeName.substring(1, 2));
@@ -73,22 +71,21 @@ var commonMarkRules = <RuleType, CommonMarkRule>{
     }
   }),
   RuleType.blockquote:
-      new CommonMarkRule(new Filter('blockquote'), (content, node, options) {
+      new Rule(new Filter('blockquote'), (content, node, options) {
     var convertContent = content
         .replaceAll(new RegExp(r'^\n+|\n+$'), '')
         .replaceAll(new RegExp(r'^', multiLine: true), '> ');
     return '\n\n$convertContent\n\n';
   }),
-  RuleType.list: new CommonMarkRule(new Filter.list(['ul', 'ol']),
-      (content, node, options) {
+  RuleType.list:
+      new Rule(new Filter.list(['ul', 'ol']), (content, node, options) {
     if (node.parentElName == 'LI' && node.isParentLastChild) {
       return '\n$content';
     } else {
       return '\n\n$content\n\n';
     }
   }),
-  RuleType.listItem:
-      new CommonMarkRule(new Filter('li'), (content, node, options) {
+  RuleType.listItem: new Rule(new Filter('li'), (content, node, options) {
     var convertContent = content
         .replaceAll(new RegExp(r'^\n+'), '')
         .replaceAll(new RegExp(r'\n+$'), '\n')
@@ -113,7 +110,7 @@ var commonMarkRules = <RuleType, CommonMarkRule>{
     }
     return '$prefix$convertContent$postfix';
   }),
-  RuleType.indentedCodeBlock: new CommonMarkRule(new Filter.fn((node, options) {
+  RuleType.indentedCodeBlock: new Rule(new Filter.fn((node, options) {
     return options['codeBlockStyle'] == 'indented' &&
         node.nodeName == 'PRE' &&
         node.firstChild != null &&
@@ -123,7 +120,7 @@ var commonMarkRules = <RuleType, CommonMarkRule>{
         node.firstChild.textContent.replaceAll(new RegExp(r'\n'), '\n    ') +
         '\n\n';
   }),
-  RuleType.fencedCodeBlock: new CommonMarkRule(new Filter.fn((node, options) {
+  RuleType.fencedCodeBlock: new Rule(new Filter.fn((node, options) {
     return options['codeBlockStyle'] == 'fenced' &&
         node.nodeName == 'PRE' &&
         node.firstChild != null &&
@@ -142,12 +139,11 @@ var commonMarkRules = <RuleType, CommonMarkRule>{
         options['fence'] +
         '\n\n';
   }),
-  RuleType.horizontalRule:
-      new CommonMarkRule(new Filter('hr'), (content, node, options) {
+  RuleType.horizontalRule: new Rule(new Filter('hr'), (content, node, options) {
     // TODO: options
     return '${options['hr']}\n';
   }),
-  RuleType.inlineLink: new CommonMarkRule(new Filter.fn((node, options) {
+  RuleType.inlineLink: new Rule(new Filter.fn((node, options) {
     return options['linkStyle'] == 'inlined' &&
         node.nodeName == 'A' &&
         node.getAttribute('href') != null;
@@ -156,7 +152,7 @@ var commonMarkRules = <RuleType, CommonMarkRule>{
     var title = node.getAttribute('title') ?? '';
     return '[' + content + '](' + href + title + ')';
   }),
-  RuleType.referenceLink: new CommonMarkRule(new Filter.fn((node, options) {
+  RuleType.referenceLink: new Rule(new Filter.fn((node, options) {
     return options['linkStyle'] == 'referenced' &&
         node.nodeName == 'A' &&
         node.getAttribute('href') != null;
@@ -174,31 +170,31 @@ var commonMarkRules = <RuleType, CommonMarkRule>{
         reference = '[' + content + ']: ' + href + title;
         break;
       default:
-        var id = _references.length + 1;
+        var id = _linkReferences.length + 1;
         result = '[' + content + '][' + id.toString() + ']';
         reference = '[' + id.toString() + ']: ' + href + title;
     }
-    _references.add(reference);
+    _linkReferences.add(reference);
     return result;
   }, append: (options) {
     var result = '';
-    if (_references.isNotEmpty) {
-      result = '\n\n' + _references.join('\n') + '\n\n';
-      _references.clear(); // Reset references
+    if (_linkReferences.isNotEmpty) {
+      result = '\n\n' + _linkReferences.join('\n') + '\n\n';
+      _linkReferences.clear(); // Reset references
     }
     return result;
   }),
-  RuleType.emphasis: new CommonMarkRule(new Filter.list(['em', 'i']),
-      (content, node, options) {
+  RuleType.emphasis:
+      new Rule(new Filter.list(['em', 'i']), (content, node, options) {
     if (content == null || content.trim().isEmpty) return '';
     return options['emDelimiter'] + content + options['emDelimiter'];
   }),
-  RuleType.strong: new CommonMarkRule(new Filter.list(['strong', 'b']),
-      (content, node, options) {
+  RuleType.strong:
+      new Rule(new Filter.list(['strong', 'b']), (content, node, options) {
     if (content == null || content.trim().isEmpty) return '';
     return options['strongDelimiter'] + content + options['strongDelimiter'];
   }),
-  RuleType.code: new CommonMarkRule(new Filter.fn((node, options) {
+  RuleType.code: new Rule(new Filter.fn((node, options) {
     var isCodeBlock = node.nodeName == 'PRE' && !node.hasSiblings;
     return node.nodeName == 'CODE' && !isCodeBlock;
   }), (content, node, options) {
@@ -220,8 +216,7 @@ var commonMarkRules = <RuleType, CommonMarkRule>{
     }
     return delimiter + leadingSpace + content + trailingSpace + delimiter;
   }),
-  RuleType.image:
-      new CommonMarkRule(new Filter.list(['img']), (content, node, options) {
+  RuleType.image: new Rule(new Filter.list(['img']), (content, node, options) {
     var alt = node.getAttribute('alt') ?? '';
     var src = node.getAttribute('src') ?? '';
     var title = node.getAttribute('title') ?? '';

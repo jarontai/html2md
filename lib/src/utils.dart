@@ -104,11 +104,13 @@ collapseWhitespace(dom.Node domNode) {
   var current = _nextNode(prev, el);
 
   while (current != el) {
-    if (current.nodeType == 3) { // Node.TEXT_NODE
+    if (current.nodeType == 3) {
+      // Node.TEXT_NODE
       dom.Text textNode = current;
       var text = textNode.data.replaceAll(new RegExp(r'[ \r\n\t]+'), ' ');
-      if ((prevText == null || new RegExp(r' $').hasMatch(prevText.data)) 
-      && prevVoid == null && text.substring(0, 1) == ' ') {
+      if ((prevText == null || new RegExp(r' $').hasMatch(prevText.data)) &&
+          prevVoid == null &&
+          text.substring(0, 1) == ' ') {
         text = text.substring(1);
       }
 
@@ -118,7 +120,8 @@ collapseWhitespace(dom.Node domNode) {
       }
       textNode.text = text;
       prevText = textNode;
-    } else if (current.nodeType == 1) { // Node.ELEMENT_NODE
+    } else if (current.nodeType == 1) {
+      // Node.ELEMENT_NODE
       dom.Element elNode = current;
       if (isBlock(elNode) || elNode.localName.toLowerCase() == 'br') {
         if (prevText != null) {
@@ -127,7 +130,7 @@ collapseWhitespace(dom.Node domNode) {
         prevText = null;
         prevVoid = false;
       } else if (isVoid(elNode)) {
-                prevText = null;
+        prevText = null;
         prevVoid = true;
       }
     } else {
@@ -149,10 +152,12 @@ collapseWhitespace(dom.Node domNode) {
 }
 
 dom.Node _nextNode(dom.Node prev, dom.Node current) {
-  if ((prev !=null && prev.parentNode == current) || _isPre(current)) {
+  if ((prev != null && prev.parentNode == current) || _isPre(current)) {
     return _asElement(current).nextElementSibling ?? current.parentNode;
   }
-  return current.firstChild ?? _asElement(current).nextElementSibling ?? current.parent;
+  return current.firstChild ??
+      _asElement(current).nextElementSibling ??
+      current.parent;
 }
 
 dom.Node _remove(dom.Node node) {

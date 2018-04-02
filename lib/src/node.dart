@@ -14,6 +14,8 @@ class Node {
     firstChild = new Node(_el.firstChild);
   }
 
+  String get outerHTML => _el.outerHtml;
+
   bool get hasSiblings =>
       (_el.nextElementSibling != null) || (_el.previousElementSibling != null);
 
