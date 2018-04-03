@@ -37,7 +37,7 @@ class Filter {
 
   Filter.fn(this.filterFn);
 
-  bool check(Node node) {
+  bool check(Node node, Map<String, String> options) {
     var result = false;
     if (filters != null && filters.isNotEmpty) {
       result =
@@ -252,10 +252,10 @@ final _commonMarkRules = <RuleType, Rule>{
   }),
 };
 
-findRule(Node node) {
+findRule(Node node, [Map<String, String> options = const <String, String>{}]) {
   if (node.isBlank) return blankRule;
 
   return _commonMarkRules.values.firstWhere(
-      (rule) => rule.filter != null ? rule.filter.check(node) : false,
+      (rule) => rule.filter != null ? rule.filter.check(node, options) : false,
       orElse: () => defaultRule);
 }

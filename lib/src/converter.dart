@@ -98,18 +98,6 @@ class _Options {
   static const List<String> linkReferenceStyle = const [null, 'full', 'collapsed', 'shortcut'];
   static const String br = '  ';
 
-  static blankReplacement(String content, Node node) {
-    return node.isBlock ? '\n\n' : '';
-  }
-
-  static keepReplacement(String content, Node node) {
-    return node.isBlock ? '\n\n' + node.outerHTML + '\n\n' : node.outerHTML;
-  }
-
-  static defaultReplacement(String content, Node node) {
-    return node.isBlock ? '\n\n' + content + '\n\n' : content;
-  }
-
   static Map<String, String> toMap() {
     return {
       'headingStyle': headingStyles[0],
