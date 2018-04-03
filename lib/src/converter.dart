@@ -29,11 +29,23 @@ class Converter {
     return result;
   }
 
+  // Determines the new lines between the current output and the replacement
+  String _separatingNewlines(String output, String replacement) {
+    var newlines = [
+      _trailingNewLinesRegExp.stringMatch(output),
+      _leadingNewLinesRegExp.stringMatch(replacement),
+    ];
+    newlines.sort((a, b) => a.compareTo(b));
+
+    var maxNewlines = newlines.last;
+    return maxNewlines.length < 2 ? maxNewlines : '\n\n';
+  }
+
   _join(string1, string2) {
     return '';
   }
 
-  _replacementForNode(Node node) {
+  String _replacementForNode(Node node) {
     // var rule = this.rules.forNode(node)
     // var content = process.call(this, node)
     // var whitespace = node.flankingWhitespace

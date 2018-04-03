@@ -28,15 +28,24 @@ class Filter {
   FilterFn filterFn;
 
   Filter(String filter) {
-    filters = [filter];
+    filters = [filter.toLowerCase()];
   }
 
-  Filter.list(this.filters);
+  Filter.list(List<String> filters) {
+    this.filters = filters.map((filter) => filter.toLowerCase()).toList();
+  }
 
   Filter.fn(this.filterFn);
 
-  apply(Node node) {
-    // TODO: invoke filter
+  bool check(Node node) {
+    var result = false;
+    if (filters != null && filters.isNotEmpty) {
+      result =
+          filters.contains(node.nodeName.toLowerCase()); // TODO: upper or lower
+    } else if (filterFn != null) {
+      result = filterFn(node, {}); // TODO: options map
+    }
+    return result;
   }
 }
 
@@ -50,7 +59,20 @@ class Rule {
 
 final List<String> _linkReferences = [];
 
-final commonMarkRules = <RuleType, Rule>{
+final blankRule =
+    new Rule(new Filter('blank'), (String content, Node node, Map options) {
+  return node.isBlock ? '\n\n' : '';
+});
+final keepRule =
+    new Rule(new Filter('keep'), (String content, Node node, Map options) {
+  return node.isBlock ? '\n\n' + node.outerHTML + '\n\n' : node.outerHTML;
+});
+final defaultRule =
+    new Rule(new Filter('default'), (String content, Node node, Map options) {
+  return node.isBlock ? '\n\n' + content + '\n\n' : content;
+});
+
+final _commonMarkRules = <RuleType, Rule>{
   RuleType.paragraph: new Rule(new Filter('p'), (content, node, options) {
     return '\n\n$content\n\n';
   }),
@@ -229,3 +251,11 @@ final commonMarkRules = <RuleType, Rule>{
     return src.isNotEmpty ? '![' + alt + ']' + '(' + src + titlePart + ')' : '';
   }),
 };
+
+findRule(Node node) {
+  if (node.isBlank) return blankRule;
+
+  return _commonMarkRules.values.firstWhere(
+      (rule) => rule.filter != null ? rule.filter.check(node) : false,
+      orElse: () => defaultRule);
+}
