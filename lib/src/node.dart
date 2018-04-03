@@ -4,15 +4,28 @@ import 'package:html/dom.dart' as dom;
 import 'utils.dart' as util;
 
 class Node {
+  dom.Node _node;
   dom.Element _el;
-  dom.Element get el => _el;
 
   Node firstChild;
 
   Node(dom.Node domNode) {
-    _el = domNode as dom.Element;
+    _node = domNode;
+    if (_node is dom.Element) {
+      _el = domNode as dom.Element;
+    }
     firstChild = new Node(_el.firstChild);
   }
+
+  Iterable<Node> childNodes() sync* {
+    for (dom.Node node in _node.nodes) {
+      yield new Node(node);
+    }
+  }
+
+  dom.Element asElement() => _el;
+
+  int get nodeType => _node.nodeType;
 
   String get outerHTML => _el.outerHtml;
 
@@ -23,9 +36,7 @@ class Node {
 
   String get textContent => _el.text;
 
-  String get localName => _el.localName.toUpperCase();
-
-  String get nodeName => localName;
+  String get nodeName => _el.localName.toUpperCase();
 
   String get parentElName => _el.parent.localName.toUpperCase();
 
@@ -44,6 +55,12 @@ class Node {
   }
 
   bool get isBlock => util.isBlock(_el);
+
+  bool get isCode =>
+      _el.localName.toLowerCase() == 'code' ||
+      (_node.parent != null
+          ? _node.parent.localName.toLowerCase() == 'code'
+          : false);
 
   bool get isBlank {
     return ['A', 'TH', 'TD'].indexOf(nodeName) == -1 &&

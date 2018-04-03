@@ -144,6 +144,7 @@ final commonMarkRules = <RuleType, Rule>{
     return '${options['hr']}\n';
   }),
   RuleType.inlineLink: new Rule(new Filter.fn((node, options) {
+    // TODO: options
     return options['linkStyle'] == 'inlined' &&
         node.nodeName == 'A' &&
         node.getAttribute('href') != null;
@@ -153,6 +154,7 @@ final commonMarkRules = <RuleType, Rule>{
     return '[' + content + '](' + href + title + ')';
   }),
   RuleType.referenceLink: new Rule(new Filter.fn((node, options) {
+    // TODO: options
     return options['linkStyle'] == 'referenced' &&
         node.nodeName == 'A' &&
         node.getAttribute('href') != null;
@@ -160,6 +162,7 @@ final commonMarkRules = <RuleType, Rule>{
     var href = node.getAttribute('href');
     var title = node.getAttribute('title') ?? '';
     var result, reference;
+    // TODO: options
     switch (options['linkReferenceStyle']) {
       case 'collapsed':
         result = '[' + content + '][]';
@@ -187,11 +190,13 @@ final commonMarkRules = <RuleType, Rule>{
   RuleType.emphasis:
       new Rule(new Filter.list(['em', 'i']), (content, node, options) {
     if (content == null || content.trim().isEmpty) return '';
+    // TODO: options
     return options['emDelimiter'] + content + options['emDelimiter'];
   }),
   RuleType.strong:
       new Rule(new Filter.list(['strong', 'b']), (content, node, options) {
     if (content == null || content.trim().isEmpty) return '';
+    // TODO: options
     return options['strongDelimiter'] + content + options['strongDelimiter'];
   }),
   RuleType.code: new Rule(new Filter.fn((node, options) {
