@@ -1,30 +1,32 @@
-import 'package:html/parser.dart' show parse;
-import 'package:html/dom.dart';
-
 import 'package:html2md/html2md.dart' as hd;
 
 main() {
-  // var document = parse(
-  //     '''<text>Hello world! <a href="www.html5rocks.com">HTML5 rocks! <ul>
-  //       <li>1</li>
-  //       <li class="cl2">2</li>
-  //       </ul>
-  //       <img alt="hh">
-  //       </text>
-  //     ''');
-  // print(document.getElementsByTagName('text')[0].innerHtml);
-  // print(document.getElementsByTagName('img')[0].attributes['alt']);
+  String html = '''<h1>Turndown Demo</h1>
 
-  // String clazz = 'language-javascript';
-  // RegExp reg = new RegExp(r'language-(\S+)');
-  // print(reg.firstMatch(clazz).group(1));
+<p>This demonstrates <a href="https://github.com/domchristie/turndown">turndown</a> – an HTML to Markdown converter in JavaScript.</p>
 
-  // var matches = new RegExp(r'r+')
-  //     .allMatches('r3rr64r')
-  //     .toList()
-  //     .map((match) => match.group(0));
-  // print(matches);
+<h2>Usage</h2>
 
-  String html = '<h1>HTML2MD Demo</h1>';
+<pre><code class="language-js">var turndownService = new TurndownService()
+console.log(
+  turndownService.turndown('&lt;h1&gt;Hello world&lt;/h1&gt;')
+)</code></pre>
+
+<hr />
+
+<p>It aims to be <a href="http://commonmark.org/">CommonMark</a>
+ compliant, and includes options to style the output. These options include:</p>
+
+<ul>
+  <li>headingStyle (setext or atx)</li>
+  <li>horizontalRule (*, -, or _)</li>
+  <li>bullet (*, -, or +)</li>
+  <li>codeBlockStyle (indented or fenced)</li>
+  <li>fence (` or ~)</li>
+  <li>emDelimiter (_ or *)</li>
+  <li>strongDelimiter (** or __)</li>
+  <li>linkStyle (inlined or referenced)</li>
+  <li>linkReferenceStyle (full, collapsed, or shortcut)</li>
+</ul>''';
   print(hd.convert(html));
 }

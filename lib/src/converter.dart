@@ -72,8 +72,6 @@ String _replacementForNode(Node node, Map<String, String> options) {
   var whitespace = _getFlankingWhitespace(node);
   if (whitespace['leading'] != null || whitespace['trailing'] != null)
     content = content.trim();
-
-  print('_replacementForNode ${node.el} $content');
   return '${whitespace['leading'] ?? ''}${rule.replacement(content, node, options)}${whitespace['trailing'] ?? ''}';
 }
 
