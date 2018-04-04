@@ -99,7 +99,7 @@ final _commonMarkRules = <RuleType, Rule>{
   RuleType.list: new Rule(
       filters: ['ul', 'ol'],
       replacement: (content, node, options) {
-        if (node.parentElName == 'LI' && node.isParentLastChild) {
+        if (node.parentElName == 'li' && node.isParentLastChild) {
           return '\n$content';
         } else {
           return '\n\n$content\n\n';
@@ -114,7 +114,7 @@ final _commonMarkRules = <RuleType, Rule>{
             .replaceAll(new RegExp('\n', multiLine: true), '\n    ');
         // TODO: options
         var prefix = options['bulletListMarker'] + '   ';
-        if (node.parentElName == 'OL') {
+        if (node.parentElName == 'ol') {
           var start = -1;
           try {
             start = int.parse(node.getParentAttribute('start'));
@@ -134,9 +134,9 @@ final _commonMarkRules = <RuleType, Rule>{
       }),
   RuleType.indentedCodeBlock: new Rule(filterFn: (node, options) {
     return options['codeBlockStyle'] == 'indented' &&
-        node.nodeName == 'PRE' &&
+        node.nodeName == 'pre' &&
         node.firstChild != null &&
-        node.firstChild.nodeName == 'CODE';
+        node.firstChild.nodeName == 'code';
   }, replacement: (content, node, options) {
     return '\n\n    ' +
         node.firstChild.textContent.replaceAll(new RegExp(r'\n'), '\n    ') +
@@ -144,9 +144,9 @@ final _commonMarkRules = <RuleType, Rule>{
   }),
   RuleType.fencedCodeBlock: new Rule(filterFn: (node, options) {
     return options['codeBlockStyle'] == 'fenced' &&
-        node.nodeName == 'PRE' &&
+        node.nodeName == 'pre' &&
         node.firstChild != null &&
-        node.firstChild.nodeName == 'CODE';
+        node.firstChild.nodeName == 'code';
   }, replacement: (content, node, options) {
     var className = node.firstChild.className ?? '';
     var language =
@@ -170,7 +170,7 @@ final _commonMarkRules = <RuleType, Rule>{
   RuleType.inlineLink: new Rule(filterFn: (node, options) {
     // TODO: options
     return options['linkStyle'] == 'inlined' &&
-        node.nodeName == 'A' &&
+        node.nodeName == 'a' &&
         node.getAttribute('href') != null;
   }, replacement: (content, node, options) {
     var href = node.getAttribute('href');
@@ -180,7 +180,7 @@ final _commonMarkRules = <RuleType, Rule>{
   RuleType.referenceLink: new Rule(filterFn: (node, options) {
     // TODO: options
     return options['linkStyle'] == 'referenced' &&
-        node.nodeName == 'A' &&
+        node.nodeName == 'a' &&
         node.getAttribute('href') != null;
   }, replacement: (content, node, options) {
     var href = node.getAttribute('href');
@@ -228,8 +228,8 @@ final _commonMarkRules = <RuleType, Rule>{
             options['strongDelimiter'];
       }),
   RuleType.code: new Rule(filterFn: (node, options) {
-    var isCodeBlock = node.nodeName == 'PRE' && !node.hasSiblings;
-    return node.nodeName == 'CODE' && !isCodeBlock;
+    var isCodeBlock = node.nodeName == 'pre' && !node.hasSiblings;
+    return node.nodeName == 'code' && !isCodeBlock;
   }, replacement: (content, node, options) {
     if (content == null || content.trim().isEmpty) return '';
 

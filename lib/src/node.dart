@@ -36,9 +36,9 @@ class Node {
 
   String get textContent => _el.text;
 
-  String get nodeName => _el.localName.toUpperCase();
+  String get nodeName => _el.localName.toLowerCase();
 
-  String get parentElName => _el.parent.localName.toUpperCase();
+  String get parentElName => _el.parent.localName.toLowerCase();
 
   dom.Element get nextElementSibling => _el.nextElementSibling;
 
@@ -63,7 +63,7 @@ class Node {
           : false);
 
   bool get isBlank {
-    return ['A', 'TH', 'TD'].indexOf(nodeName) == -1 &&
+    return ['a', 'th', 'td'].indexOf(nodeName) == -1 &&
         new RegExp(r'^\s*$', caseSensitive: false).hasMatch(textContent) &&
         !util.isVoid(_el) &&
         !util.hasVoid(_el);
