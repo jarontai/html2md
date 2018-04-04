@@ -1,15 +1,16 @@
+import 'package:html2md/html2md.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('A group of tests', () {
-    // Awesome awesome;
+    Converter converter;
 
-    // setUp(() {
-    //   awesome = new Awesome();
-    // });
+    setUp(() {
+      converter = new Converter();
+    });
 
-    // test('First Test', () {
-    //   expect(awesome.isAwesome, isTrue);
-    // });
+    test('First Test', () {
+      // expect(converter, isTrue);
+    });
   });
 }

@@ -1,8 +1,5 @@
-import 'dart:io';
-
-import 'rules.dart';
 import 'node.dart';
-import 'utils.dart' as util;
+import 'rules.dart' as rules;
 
 final _leadingNewLinesRegExp = new RegExp(r'^\n*');
 final _trailingNewLinesRegExp = new RegExp(r'\n*$');
@@ -78,15 +75,7 @@ class Converter {
   }
 }
 
-class Rules {
-  final _Options options = new _Options();
-}
-
-class _Options {
-  static _Options _instance;
-  _Options._();
-  factory _Options() => _instance ?? new _Options._();
-
+abstract class _Options {
   static const List<String> headingStyles = const ['setext', 'atx'];
   static const List<String> hr = const ['* * *', '- - -', '_ _ _'];
   static const List<String> bulletListMarker = const ['*', '-', '_'];
@@ -95,7 +84,7 @@ class _Options {
   static const List<String> emDelimiter = const ['_', '*'];
   static const List<String> strongDelimiter = const ['**', '__'];
   static const List<String> linkStyle = const ['inlined', 'referenced'];
-  static const List<String> linkReferenceStyle = const [null, 'full', 'collapsed', 'shortcut'];
+  static const List<String> linkReferenceStyle = const ['full', 'collapsed', 'shortcut'];
   static const String br = '  ';
 
   static Map<String, String> toMap() {
