@@ -55,9 +55,10 @@ String _process(Node inNode, Map<String, String> options) {
   var result = '';
   for (var node in inNode.childNodes()) {
     var replacement = '';
-    if (node.nodeType == 3) {
-      replacement = node.isCode ? node.textContent : _escape(node.textContent);
-    } else if (node.nodeType == 1) {
+    if (node.nodeType == 3) { // Text
+      var textContent = node.textContent;
+      replacement = node.isCode ? textContent : _escape(textContent);
+    } else if (node.nodeType == 1) { // Element
       replacement = _replacementForNode(node, options);
     }
     result = _join(result, replacement ?? '');
@@ -71,7 +72,9 @@ String _replacementForNode(Node node, Map<String, String> options) {
   var whitespace = _getFlankingWhitespace(node);
   if (whitespace['leading'] != null || whitespace['trailing'] != null)
     content = content.trim();
-  return '${whitespace['leading']}${rule.replacement(content, node, options)}${whitespace['trailing']}';
+
+  print('_replacementForNode ${node.el} $content');
+  return '${whitespace['leading'] ?? ''}${rule.replacement(content, node, options)}${whitespace['trailing'] ?? ''}';
 }
 
 Map<String, String> _getFlankingWhitespace(Node node) {

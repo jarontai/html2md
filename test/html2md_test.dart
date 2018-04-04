@@ -6,11 +6,12 @@ void main() {
     String html;
 
     setUp(() {
-      html = '<h1>Turndown Demo</h1>';
+      html = '<h1>HTML2MD Demo</h1>';
     });
 
     test('First Test', () {
-      hd.convert(html);
+      var out = '\n\nHTML2MD Demo\n============\n\n';
+      expect(hd.convert(html), out) ;
     });
   });
 }

@@ -6,11 +6,12 @@ import 'utils.dart' as util;
 class Node {
   dom.Node _node;
   dom.Element _el;
+  dom.Text _text;
   dom.Element get el => _el;
 
   Node get firstChild {
-    if (_node != null && _node.firstChild != null) {
-      return new Node(_node.firstChild);
+    if (_el != null && _el.firstChild != null) {
+      return new Node(_el.firstChild);
     }
     return null;
   }
@@ -21,22 +22,24 @@ class Node {
   }
 
   Node(dom.Node domNode) {
-    print(domNode);
     _node = domNode;
-    if (_node is dom.Element) {
-      _el = (domNode as dom.Element);
+    if (domNode is dom.Element) {
+      _el = domNode;
+    }
+    if (domNode is dom.Text) {
+      _text = domNode;
     }
   }
 
   Iterable<Node> childNodes() sync* {
-    for (dom.Node node in _node.nodes) {
+    for (dom.Node node in _el.nodes) {
       yield new Node(node);
     }
   }
 
   dom.Element asElement() => _el;
 
-  int get nodeType => _node.nodeType;
+  int get nodeType => _el?.nodeType ?? _node.nodeType;
 
   String get outerHTML => _el.outerHtml;
 
@@ -45,13 +48,7 @@ class Node {
 
   String get className => _el.className;
 
-  String get textContent {
-    if (_el == null) return null;
-    if (_el is dom.Text) {
-      return (_el as dom.Text).data;
-    }
-    return _el.text;
-  }
+  String get textContent => _text?.data ?? _el?.text;
 
   String get nodeName => _el.localName.toLowerCase();
 
@@ -76,8 +73,8 @@ class Node {
   bool get isCode {
     if (_el == null) return false;
     return _el.localName.toLowerCase() == 'code' ||
-        (_node.parent != null
-            ? _node.parent.localName.toLowerCase() == 'code'
+        (_el.parent != null
+            ? _el.parent.localName.toLowerCase() == 'code'
             : false);
   }
 

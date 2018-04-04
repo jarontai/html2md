@@ -25,7 +25,6 @@ main() {
   //     .map((match) => match.group(0));
   // print(matches);
 
-  String html = '<h1>Turndown Demo</h1>';
-  print('--------------');
+  String html = '<h1>HTML2MD Demo</h1>';
   print(hd.convert(html));
 }
