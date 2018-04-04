@@ -1,16 +1,16 @@
-import 'package:html2md/html2md.dart';
+import 'package:html2md/html2md.dart' as hd;
 import 'package:test/test.dart';
 
 void main() {
   group('A group of tests', () {
-    Converter converter;
+    String html;
 
     setUp(() {
-      converter = new Converter();
+      html = '<h1>Turndown Demo</h1>';
     });
 
     test('First Test', () {
-      // expect(converter, isTrue);
+      hd.convert(html);
     });
   });
 }

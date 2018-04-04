@@ -42,8 +42,17 @@ class Rule {
     return result ?? filterFn;
   }
 
-  bool check(Node node, Map<String, String> options) =>
+  bool _check(Node node, Map<String, String> options) =>
       _realFilterFn == null ? false : _realFilterFn(node, options);
+
+  static Rule findRule(Node node,
+      [Map<String, String> options = const <String, String>{}]) {
+    if (node.isBlank) return blankRule;
+  
+    return _commonMarkRules.values.firstWhere(
+        (rule) => rule._check(node, options),
+        orElse: () => defaultRule);
+  }
 }
 
 final List<String> _linkReferences = [];
@@ -261,10 +270,3 @@ final _commonMarkRules = <RuleType, Rule>{
             : '';
       }),
 };
-
-findRule(Node node, [Map<String, String> options = const <String, String>{}]) {
-  if (node.isBlank) return blankRule;
-
-  return _commonMarkRules.values.firstWhere((rule) => rule.check(node, options),
-      orElse: () => defaultRule);
-}

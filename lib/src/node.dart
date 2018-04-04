@@ -6,15 +6,26 @@ import 'utils.dart' as util;
 class Node {
   dom.Node _node;
   dom.Element _el;
+  dom.Element get el => _el;
 
-  Node firstChild;
+  Node get firstChild {
+    if (_node != null && _node.firstChild != null) {
+      return new Node(_node.firstChild);
+    }
+    return null;
+  }
+
+  factory Node.root(String html) {
+    var doc = parse('<x-html2md id="html2md-root">' + html + '</x-html2md>');
+    return new Node(doc.getElementById('html2md-root'));
+  }
 
   Node(dom.Node domNode) {
+    print(domNode);
     _node = domNode;
     if (_node is dom.Element) {
-      _el = domNode as dom.Element;
+      _el = (domNode as dom.Element);
     }
-    firstChild = new Node(_el.firstChild);
   }
 
   Iterable<Node> childNodes() sync* {
@@ -34,7 +45,13 @@ class Node {
 
   String get className => _el.className;
 
-  String get textContent => _el.text;
+  String get textContent {
+    if (_el == null) return null;
+    if (_el is dom.Text) {
+      return (_el as dom.Text).data;
+    }
+    return _el.text;
+  }
 
   String get nodeName => _el.localName.toLowerCase();
 
@@ -56,64 +73,18 @@ class Node {
 
   bool get isBlock => util.isBlock(_el);
 
-  bool get isCode =>
-      _el.localName.toLowerCase() == 'code' ||
-      (_node.parent != null
-          ? _node.parent.localName.toLowerCase() == 'code'
-          : false);
+  bool get isCode {
+    if (_el == null) return false;
+    return _el.localName.toLowerCase() == 'code' ||
+        (_node.parent != null
+            ? _node.parent.localName.toLowerCase() == 'code'
+            : false);
+  }
 
   bool get isBlank {
     return ['a', 'th', 'td'].indexOf(nodeName) == -1 &&
         new RegExp(r'^\s*$', caseSensitive: false).hasMatch(textContent) &&
         !util.isVoid(_el) &&
         !util.hasVoid(_el);
-  }
-
-  Map get flankingWhitespace {
-    var result = {};
-    if (!isBlock) {
-      var hasLeading = new RegExp(r'^[ \r\n\t]').hasMatch(textContent);
-      var hasTrailing = new RegExp(r'[ \r\n\t]$').hasMatch(textContent);
-
-      if (hasLeading && !isFlankedByWhitespace('left')) {
-        result['leading'] = ' ';
-      }
-      if (hasTrailing && !isFlankedByWhitespace('right')) {
-        result['trailing'] = ' ';
-      }
-    }
-    return result;
-  }
-
-  bool isFlankedByWhitespace(String side) {
-    dom.Element sibling;
-    RegExp regExp;
-    bool isFlanked;
-
-    if (side == 'left') {
-      sibling = _el.previousElementSibling;
-      regExp = new RegExp(r' $');
-    } else {
-      sibling = _el.nextElementSibling;
-      regExp = new RegExp(r'^ ');
-    }
-
-    if (sibling != null) {
-      if (sibling.nodeType == 3) {
-        isFlanked = regExp.hasMatch(sibling.innerHtml);
-      } else if (sibling.nodeType == 1 && !util.isBlock(sibling)) {
-        isFlanked = regExp.hasMatch(sibling.text);
-      }
-    }
-    return isFlanked;
-  }
-}
-
-class RootNode {
-  Node root;
-
-  RootNode(String input) {
-    var doc = parse('<x-html2md id="html2md-root">' + input + '</x-html2md>');
-    root = new Node(doc.getElementById('html2md-root'));
   }
 }
