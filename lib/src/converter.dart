@@ -5,30 +5,6 @@ import 'utils.dart' as util;
 
 import 'node.dart';
 
-const List<String> headingStyles = const ['setext', 'atx'];
-const List<String> hr = const ['* * *', '- - -', '_ _ _'];
-const List<String> bulletListMarker = const ['*', '-', '_'];
-const List<String> codeBlockStyle = const ['indented', 'fenced'];
-const List<String> fence = const ['```', '~~~'];
-const List<String> emDelimiter = const ['_', '*'];
-const List<String> strongDelimiter = const ['**', '__'];
-const List<String> linkStyle = const ['inlined', 'referenced'];
-const List<String> linkReferenceStyle = const ['full', 'collapsed', 'shortcut'];
-const String br = '  ';
-
-final options = <String, String>{
-  'headingStyle': headingStyles[0],
-  'hr': hr[0],
-  'bulletListMarker': bulletListMarker[0],
-  'codeBlockStyle': codeBlockStyle[0],
-  'fence': fence[0],
-  'emDelimiter': emDelimiter[0],
-  'strongDelimiter': strongDelimiter[0],
-  'linkStyle': linkStyle[0],
-  'linkReferenceStyle': linkReferenceStyle[0],
-  'br': br,
-};
-
 final _leadingNewLinesRegExp = new RegExp(r'^\n*');
 final _trailingNewLinesRegExp = new RegExp(r'\n*$');
 
@@ -36,7 +12,7 @@ String convert(String html) {
   if (html == null || html.isEmpty) {
     return '';
   }
-  var output = _process(new Node.root(html), options);
+  var output = _process(new Node.root(html));
   return _postProcess(output);
 }
 
@@ -51,7 +27,7 @@ String _postProcess(String input) {
   return input;
 }
 
-String _process(Node inNode, Map<String, String> options) {
+String _process(Node inNode) {
   var result = '';
   for (var node in inNode.childNodes()) {
     var replacement = '';
@@ -59,20 +35,22 @@ String _process(Node inNode, Map<String, String> options) {
       var textContent = node.textContent;
       replacement = node.isCode ? textContent : _escape(textContent);
     } else if (node.nodeType == 1) { // Element
-      replacement = _replacementForNode(node, options);
+      replacement = _replacementForNode(node);
     }
     result = _join(result, replacement ?? '');
   }
   return result;
 }
 
-String _replacementForNode(Node node, Map<String, String> options) {
+String _replacementForNode(Node node) {
   var rule = Rule.findRule(node);
-  var content = _process(node, options);
+  var content = _process(node);
   var whitespace = _getFlankingWhitespace(node);
-  if (whitespace['leading'] != null || whitespace['trailing'] != null)
+  if (whitespace['leading'] != null || whitespace['trailing'] != null) {
     content = content.trim();
-  return '${whitespace['leading'] ?? ''}${rule.replacement(content, node, options)}${whitespace['trailing'] ?? ''}';
+  }
+  var replacement = rule.replacement(content, node);
+  return '${whitespace['leading'] ?? ''}${replacement}${whitespace['trailing'] ?? ''}';
 }
 
 Map<String, String> _getFlankingWhitespace(Node node) {
