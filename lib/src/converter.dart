@@ -8,6 +8,8 @@ import 'node.dart';
 final _leadingNewLinesRegExp = new RegExp(r'^\n*');
 final _trailingNewLinesRegExp = new RegExp(r'\n*$');
 
+final Set<Rule> appendRuleSet = new Set<Rule>();
+
 String convert(String html) {
   if (html == null || html.isEmpty) {
     return '';
@@ -17,24 +19,28 @@ String convert(String html) {
 }
 
 String _postProcess(String input) {
-  // this.rules.forEach(function (rule) {
-  //   if (typeof rule.append === 'function') {
-  //     output = join(output, rule.append(self.options))
-  //   }
-  // })
+  appendRuleSet.forEach((rule) {
+    input = _join(input, rule.append());
+  });
 
-  // return output.replace(/^[\t\r\n]+/, '').replace(/[\t\r\n\s]+$/, '')\
-  return input;
+  if (input != null && input.isNotEmpty) {
+    return input
+        .replaceAll(new RegExp(r'^[\t\r\n]+'), '')
+        .replaceAll(new RegExp(r'[\t\r\n\s]+$'), '');
+  }
+  return '';
 }
 
 String _process(Node inNode) {
   var result = '';
   for (var node in inNode.childNodes()) {
     var replacement = '';
-    if (node.nodeType == 3) { // Text
+    if (node.nodeType == 3) {
+      // Text
       var textContent = node.textContent;
       replacement = node.isCode ? textContent : _escape(textContent);
-    } else if (node.nodeType == 1) { // Element
+    } else if (node.nodeType == 1) {
+      // Element
       replacement = _replacementForNode(node);
     }
     result = _join(result, replacement ?? '');
@@ -44,6 +50,9 @@ String _process(Node inNode) {
 
 String _replacementForNode(Node node) {
   var rule = Rule.findRule(node);
+  if (rule != null && rule.append != null) {
+    appendRuleSet.add(rule);
+  }
   var content = _process(node);
   var whitespace = _getFlankingWhitespace(node);
   if (whitespace['leading'] != null || whitespace['trailing'] != null) {
