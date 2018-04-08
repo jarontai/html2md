@@ -1,4 +1,4 @@
-import 'package:html2md/html2md.dart' as hd;
+import 'package:html2md/html2md.dart' as hm;
 
 main() {
   String html = '''<h1>Turndown Demo</h1>
@@ -14,8 +14,7 @@ console.log(
 
 <hr />
 
-<p>It aims to be <a href="http://commonmark.org/">CommonMark</a>
- compliant, and includes options to style the output. These options include:</p>
+<p>It aims to be <a href="http://commonmark.org/">CommonMark</a> compliant, and includes options to style the output. These options include:</p>
 
 <ul>
   <li>headingStyle (setext or atx)</li>
@@ -28,5 +27,5 @@ console.log(
   <li>linkStyle (inlined or referenced)</li>
   <li>linkReferenceStyle (full, collapsed, or shortcut)</li>
 </ul>''';
-  print(hd.convert(html));
+  print(hm.convert(html));
 }

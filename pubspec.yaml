@@ -1,8 +1,8 @@
 name: html2md
-description: A starting point for Dart libraries or applications.
+description: Convert html to markdown. A simplify version of node's `turndown`.
 version: 0.0.1
-#homepage: https://www.example.com
-#author: jarontai <email@example.com>
+homepage: https://github.com/jarontai/html2md
+author: jarontai <jaroncn@gmail.com>
 
 environment:
   sdk: '>=1.20.1 <2.0.0'

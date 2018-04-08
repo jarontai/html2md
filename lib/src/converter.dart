@@ -68,32 +68,32 @@ Map<String, String> _getFlankingWhitespace(Node node) {
     var hasLeading = new RegExp(r'^[ \r\n\t]').hasMatch(node.textContent);
     var hasTrailing = new RegExp(r'[ \r\n\t]$').hasMatch(node.textContent);
 
-    if (hasLeading && !_isFlankedByWhitespace(node.el, 'left')) {
+    if (hasLeading && !_isFlankedByWhitespace(node, 'left')) {
       result['leading'] = ' ';
     }
-    if (hasTrailing && !_isFlankedByWhitespace(node.el, 'right')) {
+    if (hasTrailing && !_isFlankedByWhitespace(node, 'right')) {
       result['trailing'] = ' ';
     }
   }
   return result;
 }
 
-bool _isFlankedByWhitespace(dom.Element el, String side) {
-  dom.Element sibling;
+bool _isFlankedByWhitespace(Node node, String side) {
+  dom.Node sibling;
   RegExp regExp;
   bool isFlanked;
 
   if (side == 'left') {
-    sibling = el.previousElementSibling;
+    sibling = util.previousSibling(node.node);
     regExp = new RegExp(r' $');
   } else {
-    sibling = el.nextElementSibling;
+    sibling = util.nextSibling(node.node);
     regExp = new RegExp(r'^ ');
   }
 
   if (sibling != null) {
     if (sibling.nodeType == 3) {
-      isFlanked = regExp.hasMatch(sibling.innerHtml);
+      isFlanked = regExp.hasMatch((sibling as dom.Element).innerHtml);
     } else if (sibling.nodeType == 1 && !util.isBlock(sibling)) {
       isFlanked = regExp.hasMatch(sibling.text);
     }
