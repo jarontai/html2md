@@ -141,8 +141,10 @@ final _commonMarkRules = [
       prefix = '$index.  ';
     }
     var postfix = '';
-    if (node.nextElementSibling != null) {
-      postfix = new RegExp(r'\n$').hasMatch(convertContent) ? '\n' : '';
+    if (node.nextSibling != null) {
+      // TODO: ???
+      // postfix = new RegExp(r'\n$').hasMatch(convertContent) ? '\n' : '\n';
+      postfix = '\n';
     }
     return '$prefix$convertContent$postfix';
   }),

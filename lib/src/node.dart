@@ -5,9 +5,9 @@ import 'utils.dart' as util;
 
 class Node {
   dom.Node _node;
+  dom.Node get node => _node;
   dom.Element _el;
   dom.Text _text;
-  dom.Element get el => _el;
 
   Node get firstChild {
     if (_el != null && _el.firstChild != null) {
@@ -18,7 +18,7 @@ class Node {
 
   factory Node.root(String html) {
     var doc = parse('<x-html2md id="html2md-root">' + html + '</x-html2md>');
-    return new Node(doc.getElementById('html2md-root'));
+    return new Node(util.collapseWhitespace(doc.getElementById('html2md-root')));
   }
 
   Node(dom.Node domNode) {
@@ -44,7 +44,7 @@ class Node {
   String get outerHTML => _el.outerHtml;
 
   bool get hasSiblings =>
-      (_el.nextElementSibling != null) || (_el.previousElementSibling != null);
+      (util.nextSibling(node) != null) || (util.previousSibling(node) != null);
 
   String get className => _el.className;
 
@@ -54,7 +54,7 @@ class Node {
 
   String get parentElName => _el.parent.localName.toLowerCase();
 
-  dom.Element get nextElementSibling => _el.nextElementSibling;
+  dom.Node get nextSibling => util.nextSibling(node);
 
   bool get isParentLastChild => _el.parent.children.last == _el;
 

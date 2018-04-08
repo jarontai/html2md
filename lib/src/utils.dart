@@ -75,7 +75,12 @@ const kVoidElements = const [
   'wbr'
 ];
 
-dom.Element _asElement(dom.Node node) => node as dom.Element;
+dom.Element _asElement(dom.Node node) {
+  if (node is! dom.Element) {
+    return null;
+  }
+  return node as dom.Element;
+}
 
 bool isBlock(dom.Node node) {
   return kBlockElements.indexOf(_asElement(node).localName.toLowerCase()) != -1;
@@ -86,25 +91,26 @@ bool isVoid(dom.Node node) {
 }
 
 bool hasVoid(dom.Node node) {
-  return _asElement(node).querySelectorAll(kVoidElements.join(',')).isNotEmpty;
+  return node is dom.Element &&
+      _asElement(node).querySelectorAll(kVoidElements.join(',')).isNotEmpty;
 }
 
 bool _isPre(dom.Node node) {
-  return _asElement(node).localName.toLowerCase() == 'pre';
+  return node is dom.Element &&
+      _asElement(node).localName.toLowerCase() == 'pre';
 }
 
 // removes extraneous whitespace from the given element.
-collapseWhitespace(dom.Node domNode) {
-  var el = domNode as dom.Element;
-  if (el.firstChild == null || _isPre(el)) return;
+dom.Node collapseWhitespace(dom.Node domNode) {
+  if (domNode.firstChild == null || _isPre(domNode)) return domNode;
 
   dom.Node prev;
   dom.Text prevText;
   var prevVoid = false;
-  var current = _nextNode(prev, el);
+  var current = _nextNode(prev, domNode);
 
-  while (current != el) {
-    if (current.nodeType == 3) {
+  while (current != domNode) {
+    if (current.nodeType == 3 || current.nodeType == 4) {
       // Node.TEXT_NODE
       dom.Text textNode = current;
       var text = textNode.data.replaceAll(new RegExp(r'[ \r\n\t]+'), ' ');
@@ -149,19 +155,39 @@ collapseWhitespace(dom.Node domNode) {
       _remove(prevText);
     }
   }
+
+  return domNode;
 }
 
 dom.Node _nextNode(dom.Node prev, dom.Node current) {
   if ((prev != null && prev.parentNode == current) || _isPre(current)) {
-    return _asElement(current).nextElementSibling ?? current.parentNode;
+    return nextSibling(current) ?? current.parentNode;
   }
-  return current.firstChild ??
-      _asElement(current).nextElementSibling ??
-      current.parent;
+  return current.firstChild ?? nextSibling(current) ?? current.parent;
 }
 
 dom.Node _remove(dom.Node node) {
-  var next = _asElement(node).nextElementSibling ?? node.parentNode;
+  var next = nextSibling(node) ?? node.parentNode;
   node.remove();
   return next;
+}
+
+dom.Node previousSibling(dom.Node node) {
+  if (node.parentNode == null) return null;
+  var siblings = node.parentNode.nodes;
+  for (int i = siblings.indexOf(node) - 1; i >= 0; i--) {
+    var s = siblings[i];
+    return s;
+  }
+  return null;
+}
+
+dom.Node nextSibling(dom.Node node) {
+  if (node.parentNode == null) return null;
+  var siblings = node.parentNode.nodes;
+  for (int i = siblings.indexOf(node) + 1; i < siblings.length; i++) {
+    var s = siblings[i];
+    return s;
+  }
+  return null;
 }
