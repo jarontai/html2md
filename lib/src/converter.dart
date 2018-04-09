@@ -8,7 +8,7 @@ import 'node.dart';
 final _leadingNewLinesRegExp = new RegExp(r'^\n*');
 final _trailingNewLinesRegExp = new RegExp(r'\n*$');
 
-final Set<Rule> appendRuleSet = new Set<Rule>();
+final Set<Rule> _appendRuleSet = new Set<Rule>();
 
 String convert(String html) {
   if (html == null || html.isEmpty) {
@@ -19,7 +19,7 @@ String convert(String html) {
 }
 
 String _postProcess(String input) {
-  appendRuleSet.forEach((rule) {
+  _appendRuleSet.forEach((rule) {
     input = _join(input, rule.append());
   });
 
@@ -51,7 +51,7 @@ String _process(Node inNode) {
 String _replacementForNode(Node node) {
   var rule = Rule.findRule(node);
   if (rule != null && rule.append != null) {
-    appendRuleSet.add(rule);
+    _appendRuleSet.add(rule);
   }
   var content = _process(node);
   var whitespace = _getFlankingWhitespace(node);

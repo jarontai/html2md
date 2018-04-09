@@ -7,99 +7,102 @@ typedef String Replacement(String content, Node node);
 typedef bool FilterFn(Node node);
 typedef String Append();
 
-enum RuleType {
-  blankRule,
-  keepRule,
-  defaultRule,
+final List<String> _linkReferences = [];
 
-  paragraph,
-  lineBreak,
-  heading,
-  blockquote,
-  list,
-  listItem,
-  indentedCodeBlock,
-  fencedCodeBlock,
-  horizontalRule,
-  inlineLink,
-  referenceLink,
-  emphasis,
-  strong,
-  code,
-  image,
-}
+final _commonMarkRules = [
+  Rules.paragraph,
+  Rules.lineBreak,
+  Rules.heading,
+  Rules.blockquote,
+  Rules.list,
+  Rules.listItem,
+  Rules.indentedCodeBlock,
+  Rules.fencedCodeBlock,
+  Rules.horizontalRule,
+  Rules.inlineLink,
+  Rules.referenceLink,
+  Rules.emphasis,
+  Rules.strong,
+  Rules.code,
+  Rules.image,
+];
 
 class Rule {
-  final RuleType ruleType;
+  final String name;
   final List<String> filters;
   final FilterFn filterFn;
   final Replacement replacement;
   final Append append;
   final FilterFn _realFilterFn;
 
-  Rule(this.ruleType,
-      {this.filters,
-      this.filterFn,
-      this.replacement,
-      this.append,
-      Map<String, String> options})
+  Rule(this.name, {this.filters, this.filterFn, this.replacement, this.append})
       : _realFilterFn = _buildFilterFn(filters, filterFn);
 
   static FilterFn _buildFilterFn(List<String> filters, FilterFn filterFn) {
     FilterFn result;
     if (filters != null && filters.isNotEmpty) {
-      result = (Node node) =>
-          filters.contains(node.nodeName.toLowerCase()); // TODO: upper or lower
+      result = (Node node) => filters.contains(node.nodeName.toLowerCase());
     }
     return result ?? filterFn;
   }
 
   bool _check(Node node) => _realFilterFn == null ? false : _realFilterFn(node);
 
-  static Rule findRule(Node node) {
-    if (node.isBlank) return blankRule;
+  static Rule findRule(Node node, [List<Rule> customRules]) {
+    if (customRules != null) {
+      var customRule = customRules.firstWhere((rule) => rule._check(node),
+          orElse: () => null);
+      if (customRule != null) return customRule;
+    }
 
+    if (node.isBlank) return Rules._blankRule;
     return _commonMarkRules.firstWhere((rule) => rule._check(node),
-        orElse: () => defaultRule);
+        orElse: () => Rules._defaultRule);
   }
 
   bool operator ==(dynamic other) {
     if (other is! Rule) return false;
     Rule rule = other;
-    return rule.ruleType == ruleType;
+    return rule.name == name;
   }
 
   int get hashCode {
     int result = 17;
-    result = 37 * result + ruleType.hashCode;
+    result = 37 * result + name.hashCode;
     return result;
   }
 }
 
-final List<String> _linkReferences = [];
+abstract class Rules {
+  // static final Rule keepRule = 'keep';
+  // final keepRule = new Rule(RuleType.keepRule, filters: ['keep'],
+  //     replacement: (content, node) {
+  //   return node.isBlock ? '\n\n' + node.outerHTML + '\n\n' : node.outerHTML;
+  // });
 
-final blankRule = new Rule(RuleType.blankRule, filters: ['blank'],
-    replacement: (content, node) {
-  return node.isBlock ? '\n\n' : '';
-});
-final keepRule = new Rule(RuleType.keepRule, filters: ['keep'],
-    replacement: (content, node) {
-  return node.isBlock ? '\n\n' + node.outerHTML + '\n\n' : node.outerHTML;
-});
-final defaultRule = new Rule(RuleType.defaultRule, filters: ['default'],
-    replacement: (content, node) {
-  return node.isBlock ? '\n\n' + content + '\n\n' : content;
-});
+  static final Rule _blankRule =
+      new Rule('blank', filters: ['blank'], replacement: (content, node) {
+    return node.isBlock ? '\n\n' : '';
+  });
 
-final _commonMarkRules = [
-  new Rule(RuleType.paragraph, filters: ['p'], replacement: (content, node) {
+  static final Rule _defaultRule =
+      new Rule('default', filters: ['default'], replacement: (content, node) {
+    return node.isBlock ? '\n\n' + content + '\n\n' : content;
+  });
+
+  static final Rule paragraph =
+      new Rule('paragraph', filters: ['p'], replacement: (content, node) {
     return '\n\n$content\n\n';
-  }),
-  new Rule(RuleType.lineBreak, filters: ['br'], replacement: (content, node) {
+  });
+
+  static final Rule lineBreak =
+      new Rule('lineBreak', filters: ['br'], replacement: (content, node) {
     return '${options['br']}\n';
-  }),
-  new Rule(RuleType.heading, filters: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
-      replacement: (content, node) {
+  });
+
+  static final Rule heading =
+      new Rule('heading', filters: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+          replacement: (content, node) {
     var hLevel = int.parse(node.nodeName.substring(1, 2));
     if (options['headingStyle'] == 'setext' && hLevel < 3) {
       var underline = util.repeat(hLevel == 1 ? '=' : '-', content.length);
@@ -107,22 +110,27 @@ final _commonMarkRules = [
     } else {
       return '\n\n${util.repeat("#", hLevel)} $content\n\n';
     }
-  }),
-  new Rule(RuleType.blockquote, filters: ['blockquote'],
+  });
+
+  static final Rule blockquote = new Rule('blockquote', filters: ['blockquote'],
       replacement: (content, node) {
     var convertContent = content
         .replaceAll(new RegExp(r'^\n+|\n+$'), '')
         .replaceAll(new RegExp(r'^', multiLine: true), '> ');
     return '\n\n$convertContent\n\n';
-  }),
-  new Rule(RuleType.list, filters: ['ul', 'ol'], replacement: (content, node) {
+  });
+
+  static final Rule list =
+      new Rule('list', filters: ['ul', 'ol'], replacement: (content, node) {
     if (node.parentElName == 'li' && node.isParentLastChild) {
       return '\n$content';
     } else {
       return '\n\n$content\n\n';
     }
-  }),
-  new Rule(RuleType.listItem, filters: ['li'], replacement: (content, node) {
+  });
+
+  static final Rule listItem =
+      new Rule('listItem', filters: ['li'], replacement: (content, node) {
     var convertContent = content
         .replaceAll(new RegExp(r'^\n+'), '')
         .replaceAll(new RegExp(r'\n+$'), '\n')
@@ -147,8 +155,10 @@ final _commonMarkRules = [
       postfix = '\n';
     }
     return '$prefix$convertContent$postfix';
-  }),
-  new Rule(RuleType.indentedCodeBlock, filterFn: (node) {
+  });
+
+  static final Rule indentedCodeBlock =
+      new Rule('indentedCodeBlock', filterFn: (node) {
     return options['codeBlockStyle'] == 'indented' &&
         node.nodeName == 'pre' &&
         node.firstChild != null &&
@@ -157,8 +167,10 @@ final _commonMarkRules = [
     return '\n\n    ' +
         node.firstChild.textContent.replaceAll(new RegExp(r'\n'), '\n    ') +
         '\n\n';
-  }),
-  new Rule(RuleType.fencedCodeBlock, filterFn: (node) {
+  });
+
+  static final Rule fencedCodeBlock =
+      new Rule('fencedCodeBlock', filterFn: (node) {
     return options['codeBlockStyle'] == 'fenced' &&
         node.nodeName == 'pre' &&
         node.firstChild != null &&
@@ -175,12 +187,14 @@ final _commonMarkRules = [
         '\n' +
         options['fence'] +
         '\n\n';
-  }),
-  new Rule(RuleType.horizontalRule, filters: ['hr'],
-      replacement: (content, node) {
+  });
+
+  static final Rule horizontalRule =
+      new Rule('horizontalRule', filters: ['hr'], replacement: (content, node) {
     return '${options['hr']}\n';
-  }),
-  new Rule(RuleType.inlineLink, filterFn: (node) {
+  });
+
+  static final Rule inlineLink = new Rule('inlineLink', filterFn: (node) {
     return options['linkStyle'] == 'inlined' &&
         node.nodeName == 'a' &&
         node.getAttribute('href') != null;
@@ -188,8 +202,9 @@ final _commonMarkRules = [
     var href = node.getAttribute('href');
     var title = node.getAttribute('title') ?? '';
     return '[' + content + '](' + href + title + ')';
-  }),
-  new Rule(RuleType.referenceLink, filterFn: (node) {
+  });
+
+  static final Rule referenceLink = new Rule('referenceLink', filterFn: (node) {
     return options['linkStyle'] == 'referenced' &&
         node.nodeName == 'a' &&
         node.getAttribute('href') != null;
@@ -220,18 +235,21 @@ final _commonMarkRules = [
       _linkReferences.clear(); // Reset references
     }
     return result;
-  }),
-  new Rule(RuleType.emphasis, filters: ['em', 'i'],
-      replacement: (content, node) {
+  });
+
+  static final Rule emphasis =
+      new Rule('emphasis', filters: ['em', 'i'], replacement: (content, node) {
     if (content == null || content.trim().isEmpty) return '';
     return options['emDelimiter'] + content + options['emDelimiter'];
-  }),
-  new Rule(RuleType.strong, filters: ['strong', 'b'],
+  });
+
+  static final Rule strong = new Rule('strong', filters: ['strong', 'b'],
       replacement: (content, node) {
     if (content == null || content.trim().isEmpty) return '';
     return options['strongDelimiter'] + content + options['strongDelimiter'];
-  }),
-  new Rule(RuleType.code, filterFn: (node) {
+  });
+
+  static final Rule code = new Rule('code', filterFn: (node) {
     var isCodeBlock = node.nodeName == 'pre' && !node.hasSiblings;
     return node.nodeName == 'code' && !isCodeBlock;
   }, replacement: (content, node) {
@@ -252,12 +270,14 @@ final _commonMarkRules = [
       }
     }
     return delimiter + leadingSpace + content + trailingSpace + delimiter;
-  }),
-  new Rule(RuleType.image, filters: ['img'], replacement: (content, node) {
+  });
+
+  static final Rule image =
+      new Rule('image', filters: ['img'], replacement: (content, node) {
     var alt = node.getAttribute('alt') ?? '';
     var src = node.getAttribute('src') ?? '';
     var title = node.getAttribute('title') ?? '';
     var titlePart = title.isNotEmpty ? ' "' + title + '"' : '';
     return src.isNotEmpty ? '![' + alt + ']' + '(' + src + titlePart + ')' : '';
-  }),
-];
+  });
+}

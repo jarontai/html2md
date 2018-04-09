@@ -1,16 +1,16 @@
 import 'package:html2md/html2md.dart' as hm;
 
 main() {
-  String html = '''<h1>Turndown Demo</h1>
+  String html = '''<h1>HTML2MD Demo</h1>
 
-<p>This demonstrates <a href="https://github.com/domchristie/turndown">turndown</a> – an HTML to Markdown converter in JavaScript.</p>
+<p>This demonstrates <a href="https://github.com/jarontai/html2md">html2md</a> – an HTML to Markdown converter in Dart.</p>
 
 <h2>Usage</h2>
 
-<pre><code class="language-js">var turndownService = new TurndownService()
-console.log(
-  turndownService.turndown('&lt;h1&gt;Hello world&lt;/h1&gt;')
-)</code></pre>
+<pre><code class="language-dart">import 'package:html2md/html2md.dart' as hm;
+void main() {
+  print(hm.convert('&lt;h1&gt;Hello world&lt;/h1&gt;'));
+}</code></pre>
 
 <hr />
 

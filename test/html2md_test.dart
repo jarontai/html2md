@@ -6,16 +6,16 @@ void main() {
     String html;
 
     setUp(() {
-      html = '''<h1>Turndown Demo</h1>
+      html = '''<h1>HTML2MD Demo</h1>
 
-<p>This demonstrates <a href="https://github.com/domchristie/turndown">turndown</a> – an HTML to Markdown converter in JavaScript.</p>
+<p>This demonstrates <a href="https://github.com/jarontai/html2md">html2md</a> – an HTML to Markdown converter in Dart.</p>
 
 <h2>Usage</h2>
 
-<pre><code class="language-js">var turndownService = new TurndownService()
-console.log(
-  turndownService.turndown('&lt;h1&gt;Hello world&lt;/h1&gt;')
-)</code></pre>
+<pre><code class="language-dart">import 'package:html2md/html2md.dart' as hm;
+void main() {
+  print(hm.convert('&lt;h1&gt;Hello world&lt;/h1&gt;'));
+}</code></pre>
 
 <hr />
 
@@ -35,18 +35,18 @@ console.log(
     });
 
     test('Html Test', () {
-      var out = '''Turndown Demo
-=============
+      var out = '''HTML2MD Demo
+============
 
-This demonstrates [turndown](https://github.com/domchristie/turndown) – an HTML to Markdown converter in JavaScript.
+This demonstrates [html2md](https://github.com/jarontai/html2md) – an HTML to Markdown converter in Dart.
 
 Usage
 -----
 
-    var turndownService = new TurndownService()
-    console.log(
-      turndownService.turndown('<h1>Hello world</h1>')
-    )
+    import 'package:html2md/html2md.dart' as hm;
+    void main() {
+      print(hm.convert('<h1>Hello world</h1>'));
+    }
 
 * * *
 
