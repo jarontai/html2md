@@ -1,6 +1,6 @@
 # html2md
 
-Convert html to markdown. A simplify version of node's [turndown](https://github.com/domchristie/turndown).
+Convert html to markdown in Dart. A simplify version of node's [turndown](https://github.com/domchristie/turndown).
 
 Created from templates made available by Stagehand under a BSD-style
 [license](https://github.com/dart-lang/stagehand/blob/master/LICENSE).
