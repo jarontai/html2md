@@ -16,9 +16,15 @@ class Node {
     return null;
   }
 
-  factory Node.root(String html) {
+  factory Node.root(String html, { String rootTag }) {
     var doc = parse('<x-html2md id="html2md-root">' + html + '</x-html2md>');
-    return new Node(util.collapseWhitespace(doc.getElementById('html2md-root')));
+    var root;
+    if (rootTag != null && rootTag.isNotEmpty) {
+      var roots = doc.getElementsByTagName(rootTag);
+      root = roots.isNotEmpty ? roots.first : null;
+    } 
+    root = root ?? doc.getElementById('html2md-root');
+    return new Node(util.collapseWhitespace(root));
   }
 
   Node(dom.Node domNode) {

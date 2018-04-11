@@ -3,9 +3,13 @@ import 'package:test/test.dart';
 
 void main() {
   group('HTML2MD tests', () {
+    String rootHtml;
+    String imageHtml;
     String html;
 
     setUp(() {
+      rootHtml = '<out>out<hello><h1>HTML2MD Demo</h1></hello></out>';
+      imageHtml = '<hello><img alt="image" src="folder/image.png" /></hello>';
       html = '''<h1>HTML2MD Demo</h1>
 
 <p>This demonstrates <a href="https://github.com/jarontai/html2md">html2md</a> – an HTML to Markdown converter in Dart.</p>
@@ -62,6 +66,15 @@ It aims to be [CommonMark](http://commonmark.org/) compliant, and includes optio
 *   linkStyle (inlined or referenced)
 *   linkReferenceStyle (full, collapsed, or shortcut)''';
       expect(hm.convert(html), out) ;
+    });
+
+    test('Root Test', () {
+      expect(hm.convert(rootHtml, rootTag: 'hello'), '''HTML2MD Demo
+============''');
+    });
+
+    test('Img Test', () {
+      expect(hm.convert(imageHtml, imageBaseUrl: 'http://www.test.com'), '![image](http://www.test.com/folder/image.png)');
     });
   });
 }

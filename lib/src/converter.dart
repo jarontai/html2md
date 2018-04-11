@@ -1,4 +1,5 @@
 import 'package:html/dom.dart' as dom;
+import 'package:path/path.dart' as path;
 
 import 'rules.dart' show Rule;
 import 'utils.dart' as util;
@@ -9,12 +10,20 @@ final _leadingNewLinesRegExp = new RegExp(r'^\n*');
 final _trailingNewLinesRegExp = new RegExp(r'\n*$');
 
 final Set<Rule> _appendRuleSet = new Set<Rule>();
+final Map<String, String> _customOptions = <String, String>{};
 
-String convert(String html) {
+/// Convert [html] to markdown text.
+/// 
+/// The root tag which should be converted can be set with [rootTag].
+/// The image base url can be set with [imageBaseUrl].
+String convert(String html, { String rootTag, String imageBaseUrl }) {
   if (html == null || html.isEmpty) {
     return '';
   }
-  var output = _process(new Node.root(html));
+  if (imageBaseUrl != null && imageBaseUrl.isNotEmpty) {
+    _customOptions['imageBaseUrl'] = imageBaseUrl;
+  }
+  var output = _process(new Node.root(html, rootTag: rootTag));
   return _postProcess(output);
 }
 
@@ -59,6 +68,14 @@ String _replacementForNode(Node node) {
     content = content.trim();
   }
   var replacement = rule.replacement(content, node);
+  if (rule.name == 'image') {
+    var imageSrc = node.getAttribute('src');
+    var imageBaseUrl = _customOptions['imageBaseUrl'];
+    if (imageSrc != null && imageBaseUrl != null) {
+      var newSrc = path.join(imageBaseUrl, imageSrc);
+      replacement = replacement.replaceAll(new RegExp(imageSrc), newSrc);
+    }
+  }
   return '${whitespace['leading'] ?? ''}${replacement}${whitespace['trailing'] ?? ''}';
 }
 

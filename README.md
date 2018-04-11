@@ -16,6 +16,10 @@ A simple usage example:
       print(hm.convert(html));
     }
 
+## Test
+
+    pub run test/html2md_test.dart
+
 ## Features and bugs
 
 Please file feature requests and bugs at the [issue tracker][tracker].
