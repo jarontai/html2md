@@ -16,7 +16,7 @@ final Map<String, String> _customOptions = <String, String>{};
 /// 
 /// The root tag which should be converted can be set with [rootTag].
 /// The image base url can be set with [imageBaseUrl].
-String convert(String html, { String rootTag, String imageBaseUrl }) {
+String convert(String html, { String rootTag = 'html', String imageBaseUrl }) {
   if (html == null || html.isEmpty) {
     return '';
   }
@@ -98,7 +98,7 @@ Map<String, String> _getFlankingWhitespace(Node node) {
 bool _isFlankedByWhitespace(Node node, String side) {
   dom.Node sibling;
   RegExp regExp;
-  bool isFlanked;
+  bool isFlanked = false;
 
   if (side == 'left') {
     sibling = util.previousSibling(node.node);
@@ -109,10 +109,10 @@ bool _isFlankedByWhitespace(Node node, String side) {
   }
 
   if (sibling != null) {
-    if (sibling.nodeType == 3) {
-      isFlanked = regExp.hasMatch((sibling as dom.Element).innerHtml);
-    } else if (sibling.nodeType == 1 && !util.isBlock(sibling)) {
-      isFlanked = regExp.hasMatch(sibling.text);
+    if (sibling.nodeType is dom.Text) {
+      isFlanked = regExp.hasMatch((sibling as dom.Text).text);
+    } else if (sibling is dom.Element && !util.isBlock(sibling)) {
+      isFlanked = regExp.hasMatch(sibling.innerHtml);
     }
   }
   return isFlanked;

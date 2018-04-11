@@ -17,13 +17,12 @@ class Node {
   }
 
   factory Node.root(String html, { String rootTag }) {
-    var doc = parse('<x-html2md id="html2md-root">' + html + '</x-html2md>');
+    var doc = parse(html);
     var root;
     if (rootTag != null && rootTag.isNotEmpty) {
       var roots = doc.getElementsByTagName(rootTag);
-      root = roots.isNotEmpty ? roots.first : null;
-    } 
-    root = root ?? doc.getElementById('html2md-root');
+      root = roots.isNotEmpty ? roots.first : doc.getElementsByTagName('html').first;
+    }
     return new Node(util.collapseWhitespace(root));
   }
 
