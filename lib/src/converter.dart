@@ -80,7 +80,7 @@ String _replacementForNode(Node node) {
 }
 
 Map<String, String> _getFlankingWhitespace(Node node) {
-  var result = {};
+  Map<String, String> result = {};
   if (!node.isBlock) {
     var hasLeading = new RegExp(r'^[ \r\n\t]').hasMatch(node.textContent);
     var hasTrailing = new RegExp(r'[ \r\n\t]$').hasMatch(node.textContent);
