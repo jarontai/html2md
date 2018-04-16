@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.4
+
+- Remove the incorrect default value for 'rootTag'
+
 ## 0.1.3
 
 - Fix for crash in Dart 2

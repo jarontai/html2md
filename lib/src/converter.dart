@@ -16,7 +16,7 @@ final Map<String, String> _customOptions = <String, String>{};
 /// 
 /// The root tag which should be converted can be set with [rootTag].
 /// The image base url can be set with [imageBaseUrl].
-String convert(String html, { String rootTag = 'html', String imageBaseUrl }) {
+String convert(String html, { String rootTag, String imageBaseUrl }) {
   if (html == null || html.isEmpty) {
     return '';
   }

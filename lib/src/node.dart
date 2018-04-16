@@ -18,11 +18,11 @@ class Node {
 
   factory Node.root(String html, { String rootTag }) {
     var doc = parse(html);
-    var root;
+    dom.Element root;
     if (rootTag != null && rootTag.isNotEmpty) {
-      var roots = doc.getElementsByTagName(rootTag);
-      root = roots.isNotEmpty ? roots.first : doc.getElementsByTagName('html').first;
+      root = doc.getElementsByTagName(rootTag).first;
     }
+    root ??= doc.getElementsByTagName('html').first;
     return new Node(util.collapseWhitespace(root));
   }
 
