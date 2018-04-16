@@ -1,6 +1,7 @@
 import 'package:html/dom.dart' as dom;
 import 'package:path/path.dart' as path;
 
+import 'options.dart' show updateOptions;
 import 'rules.dart' show Rule;
 import 'utils.dart' as util;
 
@@ -16,13 +17,30 @@ final Map<String, String> _customOptions = <String, String>{};
 /// 
 /// The root tag which should be converted can be set with [rootTag].
 /// The image base url can be set with [imageBaseUrl].
-String convert(String html, { String rootTag, String imageBaseUrl }) {
+/// Style options can be set with [styleOptions].
+/// 
+/// The default and available style options:
+/// 
+/// | Name        | Default           | Options  |
+/// | ------------- |:-------------:| -----:|
+/// | headingStyle      | "setext" | "setext", "atx" |
+/// | hr      | "* * *" | "* * *", "- - -", "_ _ _" |
+/// | bulletListMarker      | "*" | "*", "-", "_" |
+/// | codeBlockStyle      | "indented" | "indented", "fenced" |
+/// | fence      | "\`\`\`" | "\`\`\`", "~~~" |
+/// | emDelimiter      | "_" | "_", "*" |
+/// | strongDelimiter      | "**" | "**", "__" |
+/// | linkStyle      | "inlined" | "inlined", "referenced" |
+/// | linkReferenceStyle      | "full" | "full", "collapsed", "shortcut" |
+/// 
+String convert(String html, { String rootTag, String imageBaseUrl, Map<String, String> styleOptions }) {
   if (html == null || html.isEmpty) {
     return '';
   }
   if (imageBaseUrl != null && imageBaseUrl.isNotEmpty) {
     _customOptions['imageBaseUrl'] = imageBaseUrl;
   }
+  updateOptions(styleOptions);
   var output = _process(new Node.root(html, rootTag: rootTag));
   return _postProcess(output);
 }

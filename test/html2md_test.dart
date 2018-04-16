@@ -6,8 +6,10 @@ void main() {
     String rootHtml;
     String imageHtml;
     String html;
+    String optionsHtml;
 
     setUp(() {
+      optionsHtml = '<h1>HTML2MD Demo</h1>';
       rootHtml = '<out>out<hello><h1>HTML2MD Demo</h1></hello></out>';
       imageHtml = '<hello><img alt="image" src="folder/image.png" /></hello>';
       html = '''<h1>HTML2MD Demo</h1>
@@ -75,6 +77,10 @@ It aims to be [CommonMark](http://commonmark.org/) compliant, and includes optio
 
     test('Img Test', () {
       expect(hm.convert(imageHtml, imageBaseUrl: 'http://www.test.com'), '![image](http://www.test.com/folder/image.png)');
+    });
+
+    test('Options Test', () {
+      expect(hm.convert(optionsHtml, styleOptions: { 'headingStyle': 'atx' }), '''# HTML2MD Demo''');
     });
   });
 }
