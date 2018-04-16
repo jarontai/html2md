@@ -9,3 +9,5 @@ pubspec.lock
 doc/api/
 
 .vscode/
+
+.dart_tool/
