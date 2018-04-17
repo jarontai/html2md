@@ -37,7 +37,9 @@ void main() {
   <li>strongDelimiter (** or __)</li>
   <li>linkStyle (inlined or referenced)</li>
   <li>linkReferenceStyle (full, collapsed, or shortcut)</li>
-</ul>''';
+</ul>
+<pre>defaultConfig{<br>...<br>minSdkVersion 15<br>...<br>}</pre>
+''';
     });
 
     test('Html Test', () {
@@ -66,7 +68,13 @@ It aims to be [CommonMark](http://commonmark.org/) compliant, and includes optio
 *   emDelimiter (_ or *)
 *   strongDelimiter (** or __)
 *   linkStyle (inlined or referenced)
-*   linkReferenceStyle (full, collapsed, or shortcut)''';
+*   linkReferenceStyle (full, collapsed, or shortcut)
+
+defaultConfig{  
+...  
+minSdkVersion 15  
+...  
+}''';
       expect(hm.convert(html), out) ;
     });
 

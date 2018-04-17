@@ -46,24 +46,24 @@ class Node {
 
   int get nodeType => _el?.nodeType ?? _node.nodeType;
 
-  String get outerHTML => _el.outerHtml;
+  String get outerHTML => _el?.outerHtml ?? '';
 
   bool get hasSiblings =>
       (util.nextSibling(node) != null) || (util.previousSibling(node) != null);
 
-  String get className => _el.className;
+  String get className => _el?.className ?? '';
 
-  String get textContent => _text?.data ?? _el?.text;
+  String get textContent => _text?.data ?? _el?.text ?? '';
 
-  String get nodeName => _el.localName.toLowerCase();
+  String get nodeName => _el != null ? _el.localName.toLowerCase() : '';
 
-  String get parentElName => _el.parent.localName.toLowerCase();
+  String get parentElName => (_el != null && _el.parent != null) ? _el.parent.localName.toLowerCase() : '';
 
   dom.Node get nextSibling => util.nextSibling(node);
 
-  bool get isParentLastChild => _el.parent.children.last == _el;
+  bool get isParentLastChild => _node.parent.children.last == _el;
 
-  int get parentChildIndex => _el.parent.children.indexOf(_el);
+  int get parentChildIndex => _node.parent != null ? _node.parent.children.indexOf(_el) : -1;
 
   String getAttribute(String name) {
     return _el.attributes[name];

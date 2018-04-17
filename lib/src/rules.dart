@@ -74,12 +74,6 @@ class Rule {
 }
 
 abstract class Rules {
-  // static final Rule keepRule = 'keep';
-  // final keepRule = new Rule(RuleType.keepRule, filters: ['keep'],
-  //     replacement: (content, node) {
-  //   return node.isBlock ? '\n\n' + node.outerHTML + '\n\n' : node.outerHTML;
-  // });
-
   static final Rule _blankRule =
       new Rule('blank', filters: ['blank'], replacement: (content, node) {
     return node.isBlock ? '\n\n' : '';
@@ -148,12 +142,10 @@ abstract class Rules {
           : node.parentChildIndex + 1;
       prefix = '$index.  ';
     }
-    var postfix = '';
-    if (node.nextSibling != null) {
-      // TODO: ???
-      // postfix = new RegExp(r'\n$').hasMatch(convertContent) ? '\n' : '\n';
-      postfix = '\n';
-    }
+    var postfix = ((node.nextSibling != null) &&
+            !new RegExp(r'\n$').hasMatch(convertContent))
+        ? '\n'
+        : '';
     return '$prefix$convertContent$postfix';
   });
 
