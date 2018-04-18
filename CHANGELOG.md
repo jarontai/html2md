@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.6
+
+- Remove noscript element and cleanup
+- Fix pre node
+- Update test
+
 ## 0.1.5
 
 - Add named optional parameter 'styleOptions' to `convert`
