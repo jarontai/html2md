@@ -1,5 +1,7 @@
 # html2md
 
+[![Build status](https://travis-ci.org/jarontai/html2md.svg)](https://travis-ci.org/jarontai/html2md)
+
 Convert html to markdown in Dart. A simplify version of node's [turndown](https://github.com/domchristie/turndown).
 
 ## Usage
@@ -35,7 +37,7 @@ The default and available style options:
 
 ## Test
 
-    pub run test/html2md_test.dart
+    pub run test
 
 ## Features and bugs
 
