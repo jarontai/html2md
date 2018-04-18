@@ -1,45 +1,45 @@
 import 'node.dart';
 import 'utils.dart' as util;
 
-import 'options.dart' show options;
+import 'options.dart' show styleOptions;
 
-typedef String Replacement(String content, Node node);
-typedef bool FilterFn(Node node);
-typedef String Append();
+typedef String _Replacement(String content, Node node);
+typedef bool _FilterFn(Node node);
+typedef String _Append();
 
 final List<String> _linkReferences = [];
 
 final _commonMarkRules = [
-  Rules.paragraph,
-  Rules.lineBreak,
-  Rules.heading,
-  Rules.blockquote,
-  Rules.list,
-  Rules.listItem,
-  Rules.indentedCodeBlock,
-  Rules.fencedCodeBlock,
-  Rules.horizontalRule,
-  Rules.inlineLink,
-  Rules.referenceLink,
-  Rules.emphasis,
-  Rules.strong,
-  Rules.code,
-  Rules.image,
+  _Rules.paragraph,
+  _Rules.lineBreak,
+  _Rules.heading,
+  _Rules.blockquote,
+  _Rules.list,
+  _Rules.listItem,
+  _Rules.indentedCodeBlock,
+  _Rules.fencedCodeBlock,
+  _Rules.horizontalRule,
+  _Rules.inlineLink,
+  _Rules.referenceLink,
+  _Rules.emphasis,
+  _Rules.strong,
+  _Rules.code,
+  _Rules.image,
 ];
 
 class Rule {
   final String name;
   final List<String> filters;
-  final FilterFn filterFn;
-  final Replacement replacement;
-  final Append append;
-  final FilterFn _realFilterFn;
+  final _FilterFn filterFn;
+  final _Replacement replacement;
+  final _Append append;
+  final _FilterFn _realFilterFn;
 
   Rule(this.name, {this.filters, this.filterFn, this.replacement, this.append})
       : _realFilterFn = _buildFilterFn(filters, filterFn);
 
-  static FilterFn _buildFilterFn(List<String> filters, FilterFn filterFn) {
-    FilterFn result;
+  static _FilterFn _buildFilterFn(List<String> filters, _FilterFn filterFn) {
+    _FilterFn result;
     if (filters != null && filters.isNotEmpty) {
       result = (Node node) => filters.contains(node.nodeName.toLowerCase());
     }
@@ -55,9 +55,9 @@ class Rule {
       if (customRule != null) return customRule;
     }
 
-    if (node.isBlank) return Rules._blankRule;
+    if (node.isBlank) return _Rules._blankRule;
     return _commonMarkRules.firstWhere((rule) => rule._check(node),
-        orElse: () => Rules._defaultRule);
+        orElse: () => _Rules._defaultRule);
   }
 
   bool operator ==(dynamic other) {
@@ -73,7 +73,7 @@ class Rule {
   }
 }
 
-abstract class Rules {
+abstract class _Rules {
   static final Rule _blankRule =
       new Rule('blank', filters: ['blank'], replacement: (content, node) {
     return node.isBlock ? '\n\n' : '';
@@ -91,14 +91,14 @@ abstract class Rules {
 
   static final Rule lineBreak =
       new Rule('lineBreak', filters: ['br'], replacement: (content, node) {
-    return '${options['br']}\n';
+    return '${styleOptions['br']}\n';
   });
 
   static final Rule heading =
       new Rule('heading', filters: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
           replacement: (content, node) {
     var hLevel = int.parse(node.nodeName.substring(1, 2));
-    if (options['headingStyle'] == 'setext' && hLevel < 3) {
+    if (styleOptions['headingStyle'] == 'setext' && hLevel < 3) {
       var underline = util.repeat(hLevel == 1 ? '=' : '-', content.length);
       return '\n\n$content\n$underline\n\n';
     } else {
@@ -129,7 +129,7 @@ abstract class Rules {
         .replaceAll(new RegExp(r'^\n+'), '')
         .replaceAll(new RegExp(r'\n+$'), '\n')
         .replaceAll(new RegExp('\n', multiLine: true), '\n    ');
-    var prefix = options['bulletListMarker'] + '   ';
+    var prefix = styleOptions['bulletListMarker'] + '   ';
     if (node.parentElName == 'ol') {
       var start = -1;
       try {
@@ -151,7 +151,7 @@ abstract class Rules {
 
   static final Rule indentedCodeBlock =
       new Rule('indentedCodeBlock', filterFn: (node) {
-    return options['codeBlockStyle'] == 'indented' &&
+    return styleOptions['codeBlockStyle'] == 'indented' &&
         node.nodeName == 'pre' &&
         node.firstChild != null &&
         node.firstChild.nodeName == 'code';
@@ -163,7 +163,7 @@ abstract class Rules {
 
   static final Rule fencedCodeBlock =
       new Rule('fencedCodeBlock', filterFn: (node) {
-    return options['codeBlockStyle'] == 'fenced' &&
+    return styleOptions['codeBlockStyle'] == 'fenced' &&
         node.nodeName == 'pre' &&
         node.firstChild != null &&
         node.firstChild.nodeName == 'code';
@@ -172,22 +172,22 @@ abstract class Rules {
     var language =
         new RegExp(r'language-(\S+)').firstMatch(className).group(1) ?? '';
     return '\n\n' +
-        options['fence'] +
+        styleOptions['fence'] +
         language +
         '\n' +
         node.firstChild.textContent +
         '\n' +
-        options['fence'] +
+        styleOptions['fence'] +
         '\n\n';
   });
 
   static final Rule horizontalRule =
       new Rule('horizontalRule', filters: ['hr'], replacement: (content, node) {
-    return '${options['hr']}\n';
+    return '${styleOptions['hr']}\n';
   });
 
   static final Rule inlineLink = new Rule('inlineLink', filterFn: (node) {
-    return options['linkStyle'] == 'inlined' &&
+    return styleOptions['linkStyle'] == 'inlined' &&
         node.nodeName == 'a' &&
         node.getAttribute('href') != null;
   }, replacement: (content, node) {
@@ -197,14 +197,14 @@ abstract class Rules {
   });
 
   static final Rule referenceLink = new Rule('referenceLink', filterFn: (node) {
-    return options['linkStyle'] == 'referenced' &&
+    return styleOptions['linkStyle'] == 'referenced' &&
         node.nodeName == 'a' &&
         node.getAttribute('href') != null;
   }, replacement: (content, node) {
     var href = node.getAttribute('href');
     var title = node.getAttribute('title') ?? '';
     var result, reference;
-    switch (options['linkReferenceStyle']) {
+    switch (styleOptions['linkReferenceStyle']) {
       case 'collapsed':
         result = '[' + content + '][]';
         reference = '[' + content + ']: ' + href + title;
@@ -232,13 +232,13 @@ abstract class Rules {
   static final Rule emphasis =
       new Rule('emphasis', filters: ['em', 'i'], replacement: (content, node) {
     if (content == null || content.trim().isEmpty) return '';
-    return options['emDelimiter'] + content + options['emDelimiter'];
+    return styleOptions['emDelimiter'] + content + styleOptions['emDelimiter'];
   });
 
   static final Rule strong = new Rule('strong', filters: ['strong', 'b'],
       replacement: (content, node) {
     if (content == null || content.trim().isEmpty) return '';
-    return options['strongDelimiter'] + content + options['strongDelimiter'];
+    return styleOptions['strongDelimiter'] + content + styleOptions['strongDelimiter'];
   });
 
   static final Rule code = new Rule('code', filterFn: (node) {

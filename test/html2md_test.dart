@@ -7,8 +7,10 @@ void main() {
     String imageHtml;
     String html;
     String optionsHtml;
+    String removeHtml;
 
     setUp(() {
+      removeHtml = '<out>out<hello><h1>HTML2MD Demo</h1></hello><noscript>Hello in noscript</noscript></out>';
       optionsHtml = '<h1>HTML2MD Demo</h1>';
       rootHtml = '<out>out<hello><h1>HTML2MD Demo</h1></hello></out>';
       imageHtml = '<hello><img alt="image" src="folder/image.png" /></hello>';
@@ -89,6 +91,11 @@ minSdkVersion 15
 
     test('Options Test', () {
       expect(hm.convert(optionsHtml, styleOptions: { 'headingStyle': 'atx' }), '''# HTML2MD Demo''');
+    });
+
+    test('Remove Test', () {
+      expect(hm.convert(removeHtml, rootTag: 'hello', styleOptions: { 'headingStyle': 'setext' }), '''HTML2MD Demo
+============''');
     });
   });
 }

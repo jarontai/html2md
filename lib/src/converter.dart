@@ -1,7 +1,7 @@
 import 'package:html/dom.dart' as dom;
 import 'package:path/path.dart' as path;
 
-import 'options.dart' show updateOptions;
+import 'options.dart' show updateStyleOptions;
 import 'rules.dart' show Rule;
 import 'utils.dart' as util;
 
@@ -40,7 +40,7 @@ String convert(String html, { String rootTag, String imageBaseUrl, Map<String, S
   if (imageBaseUrl != null && imageBaseUrl.isNotEmpty) {
     _customOptions['imageBaseUrl'] = imageBaseUrl;
   }
-  updateOptions(styleOptions);
+  updateStyleOptions(styleOptions);
   var output = _process(new Node.root(html, rootTag: rootTag));
   return _postProcess(output);
 }

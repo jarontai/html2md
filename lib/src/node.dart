@@ -23,7 +23,7 @@ class Node {
       root = doc.getElementsByTagName(rootTag).first;
     }
     root ??= doc.getElementsByTagName('html').first;
-    return new Node(util.collapseWhitespace(root));
+    return new Node(util.prepareRoot(root));
   }
 
   Node(dom.Node domNode) {

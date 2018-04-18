@@ -1,10 +1,17 @@
 import 'package:html/dom.dart' as dom;
 
+import 'options.dart' show removeTags;
+
 String repeat(String content, int times) {
   return new List.filled(times, content).join();
 }
 
-const kBlockElements = const [
+dom.Node prepareRoot(dom.Node rootNode) {
+  dom.Node result = _collapseWhitespace(rootNode, removeTags);
+  return result;
+}
+
+const _kBlockElements = const [
   'address',
   'article',
   'aside',
@@ -56,7 +63,7 @@ const kBlockElements = const [
   'ul'
 ];
 
-const kVoidElements = const [
+const _kVoidElements = const [
   'area',
   'base',
   'br',
@@ -83,16 +90,16 @@ dom.Element _asElement(dom.Node node) {
 }
 
 bool isBlock(dom.Node node) {
-  return kBlockElements.indexOf(_asElement(node).localName.toLowerCase()) != -1;
+  return _kBlockElements.indexOf(_asElement(node)?.localName?.toLowerCase()) != -1;
 }
 
 bool isVoid(dom.Node node) {
-  return kVoidElements.indexOf(_asElement(node).localName.toLowerCase()) != -1;
+  return _kVoidElements.indexOf(_asElement(node)?.localName?.toLowerCase()) != -1;
 }
 
 bool hasVoid(dom.Node node) {
   return node is dom.Element &&
-      _asElement(node).querySelectorAll(kVoidElements.join(',')).isNotEmpty;
+      _asElement(node).querySelectorAll(_kVoidElements.join(',')).isNotEmpty;
 }
 
 bool _isPre(dom.Node node) {
@@ -100,8 +107,8 @@ bool _isPre(dom.Node node) {
       _asElement(node).localName.toLowerCase() == 'pre';
 }
 
-// removes extraneous whitespace from the given element.
-dom.Node collapseWhitespace(dom.Node domNode) {
+// removes extraneous whitespace from the given element. 
+dom.Node _collapseWhitespace(dom.Node domNode, List<String> removeTags) {
   if (domNode.firstChild == null || _isPre(domNode)) return domNode;
 
   dom.Node prev;
@@ -129,6 +136,13 @@ dom.Node collapseWhitespace(dom.Node domNode) {
     } else if (current.nodeType == 1) {
       // Node.ELEMENT_NODE
       dom.Element elNode = current;
+
+      // Remove tags
+      if (removeTags.contains(elNode.localName.toLowerCase())) {
+        current = _remove(current);
+        continue;
+      }
+
       if (isBlock(elNode) || elNode.localName.toLowerCase() == 'br') {
         if (prevText != null) {
           prevText.data = prevText.data.replaceAll(new RegExp(r' $'), '');
