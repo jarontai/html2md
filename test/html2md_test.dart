@@ -1,4 +1,4 @@
-import 'package:html2md/html2md.dart' as hm;
+import 'package:html2md/html2md.dart' as html2md;
 import 'package:test/test.dart';
 
 void main() {
@@ -20,9 +20,9 @@ void main() {
 
 <h2>Usage</h2>
 
-<pre><code class="language-dart">import 'package:html2md/html2md.dart' as hm;
+<pre><code class="language-dart">import 'package:html2md/html2md.dart' as html2md;
 void main() {
-  print(hm.convert('&lt;h1&gt;Hello world&lt;/h1&gt;'));
+  print(html2md.convert('&lt;h1&gt;Hello world&lt;/h1&gt;'));
 }</code></pre>
 
 <hr />
@@ -53,9 +53,9 @@ This demonstrates [html2md](https://github.com/jarontai/html2md) – an HTML to 
 Usage
 -----
 
-    import 'package:html2md/html2md.dart' as hm;
+    import 'package:html2md/html2md.dart' as html2md;
     void main() {
-      print(hm.convert('<h1>Hello world</h1>'));
+      print(html2md.convert('<h1>Hello world</h1>'));
     }
 
 * * *
@@ -77,24 +77,24 @@ defaultConfig{
 minSdkVersion 15  
 ...  
 }''';
-      expect(hm.convert(html), out) ;
+      expect(html2md.convert(html), out) ;
     });
 
     test('Root Test', () {
-      expect(hm.convert(rootHtml, rootTag: 'hello'), '''HTML2MD Demo
+      expect(html2md.convert(rootHtml, rootTag: 'hello'), '''HTML2MD Demo
 ============''');
     });
 
     test('Img Test', () {
-      expect(hm.convert(imageHtml, imageBaseUrl: 'http://www.test.com'), '![image](http://www.test.com/folder/image.png)');
+      expect(html2md.convert(imageHtml, imageBaseUrl: 'http://www.test.com'), '![image](http://www.test.com/folder/image.png)');
     });
 
     test('Options Test', () {
-      expect(hm.convert(optionsHtml, styleOptions: { 'headingStyle': 'atx' }), '''# HTML2MD Demo''');
+      expect(html2md.convert(optionsHtml, styleOptions: { 'headingStyle': 'atx' }), '''# HTML2MD Demo''');
     });
 
     test('Remove Test', () {
-      expect(hm.convert(removeHtml, rootTag: 'hello', styleOptions: { 'headingStyle': 'setext' }), '''HTML2MD Demo
+      expect(html2md.convert(removeHtml, rootTag: 'hello', styleOptions: { 'headingStyle': 'setext' }), '''HTML2MD Demo
 ============''');
     });
   });

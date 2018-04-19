@@ -8,18 +8,18 @@ Convert html to markdown in Dart. A simplify version of node's [turndown](https:
 
 A simple usage example:
 
-    import 'package:html2md/html2md.dart' as hm;
+    import 'package:html2md/html2md.dart' as html2md;
 
     main() {
       var html = '<h1>HTML2MD Demo</h1>';
-      print(hm.convert(html));
+      print(html2md.convert(html));
     }
 
 ## Config
 
 You can config convert style by passing `styleOptions` to `convert`:
 
-    hm.convert(html, styleOptions: { 'headingStyle': 'atx' });
+    html2md.convert(html, styleOptions: { 'headingStyle': 'atx' });
 
 The default and available style options:
 

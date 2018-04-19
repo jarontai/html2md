@@ -1,4 +1,4 @@
-import 'package:html2md/html2md.dart' as hm;
+import 'package:html2md/html2md.dart' as html2md;
 
 main() {
   String html = '''<h1>HTML2MD Demo</h1>
@@ -7,9 +7,9 @@ main() {
 
 <h2>Usage</h2>
 
-<pre><code class="language-dart">import 'package:html2md/html2md.dart' as hm;
+<pre><code class="language-dart">import 'package:html2md/html2md.dart' as html2md;
 void main() {
-  print(hm.convert('&lt;h1&gt;Hello world&lt;/h1&gt;'));
+  print(html2md.convert('&lt;h1&gt;Hello world&lt;/h1&gt;'));
 }</code></pre>
 
 <hr />
@@ -27,5 +27,5 @@ void main() {
   <li>linkStyle (inlined or referenced)</li>
   <li>linkReferenceStyle (full, collapsed, or shortcut)</li>
 </ul>''';
-  print(hm.convert(html));
+  print(html2md.convert(html));
 }
