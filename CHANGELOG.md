@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.7
+
+- Ignore invalid style options
+
 ## 0.1.6
 
 - Remove noscript element and cleanup
