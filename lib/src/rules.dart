@@ -1,7 +1,7 @@
 import 'node.dart';
 import 'utils.dart' as util;
 
-import 'options.dart' show styleOptions;
+import 'options.dart' show getStyleOption;
 
 typedef String _Replacement(String content, Node node);
 typedef bool _FilterFn(Node node);
@@ -91,14 +91,14 @@ abstract class _Rules {
 
   static final Rule lineBreak =
       new Rule('lineBreak', filters: ['br'], replacement: (content, node) {
-    return '${styleOptions['br']}\n';
+    return '${getStyleOption('br')}\n';
   });
 
   static final Rule heading =
       new Rule('heading', filters: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
           replacement: (content, node) {
     var hLevel = int.parse(node.nodeName.substring(1, 2));
-    if (styleOptions['headingStyle'] == 'setext' && hLevel < 3) {
+    if (getStyleOption('headingStyle') == 'setext' && hLevel < 3) {
       var underline = util.repeat(hLevel == 1 ? '=' : '-', content.length);
       return '\n\n$content\n$underline\n\n';
     } else {
@@ -129,7 +129,7 @@ abstract class _Rules {
         .replaceAll(new RegExp(r'^\n+'), '')
         .replaceAll(new RegExp(r'\n+$'), '\n')
         .replaceAll(new RegExp('\n', multiLine: true), '\n    ');
-    var prefix = styleOptions['bulletListMarker'] + '   ';
+    var prefix = getStyleOption('bulletListMarker') + '   ';
     if (node.parentElName == 'ol') {
       var start = -1;
       try {
@@ -151,7 +151,7 @@ abstract class _Rules {
 
   static final Rule indentedCodeBlock =
       new Rule('indentedCodeBlock', filterFn: (node) {
-    return styleOptions['codeBlockStyle'] == 'indented' &&
+    return getStyleOption('codeBlockStyle') == 'indented' &&
         node.nodeName == 'pre' &&
         node.firstChild != null &&
         node.firstChild.nodeName == 'code';
@@ -163,7 +163,7 @@ abstract class _Rules {
 
   static final Rule fencedCodeBlock =
       new Rule('fencedCodeBlock', filterFn: (node) {
-    return styleOptions['codeBlockStyle'] == 'fenced' &&
+    return getStyleOption('codeBlockStyle') == 'fenced' &&
         node.nodeName == 'pre' &&
         node.firstChild != null &&
         node.firstChild.nodeName == 'code';
@@ -172,22 +172,22 @@ abstract class _Rules {
     var language =
         new RegExp(r'language-(\S+)').firstMatch(className).group(1) ?? '';
     return '\n\n' +
-        styleOptions['fence'] +
+        getStyleOption('fence') +
         language +
         '\n' +
         node.firstChild.textContent +
         '\n' +
-        styleOptions['fence'] +
+        getStyleOption('fence') +
         '\n\n';
   });
 
   static final Rule horizontalRule =
       new Rule('horizontalRule', filters: ['hr'], replacement: (content, node) {
-    return '${styleOptions['hr']}\n';
+    return '${getStyleOption('hr')}\n';
   });
 
   static final Rule inlineLink = new Rule('inlineLink', filterFn: (node) {
-    return styleOptions['linkStyle'] == 'inlined' &&
+    return getStyleOption('linkStyle') == 'inlined' &&
         node.nodeName == 'a' &&
         node.getAttribute('href') != null;
   }, replacement: (content, node) {
@@ -197,14 +197,14 @@ abstract class _Rules {
   });
 
   static final Rule referenceLink = new Rule('referenceLink', filterFn: (node) {
-    return styleOptions['linkStyle'] == 'referenced' &&
+    return getStyleOption('linkStyle') == 'referenced' &&
         node.nodeName == 'a' &&
         node.getAttribute('href') != null;
   }, replacement: (content, node) {
     var href = node.getAttribute('href');
     var title = node.getAttribute('title') ?? '';
     var result, reference;
-    switch (styleOptions['linkReferenceStyle']) {
+    switch (getStyleOption('linkReferenceStyle')) {
       case 'collapsed':
         result = '[' + content + '][]';
         reference = '[' + content + ']: ' + href + title;
@@ -232,13 +232,13 @@ abstract class _Rules {
   static final Rule emphasis =
       new Rule('emphasis', filters: ['em', 'i'], replacement: (content, node) {
     if (content == null || content.trim().isEmpty) return '';
-    return styleOptions['emDelimiter'] + content + styleOptions['emDelimiter'];
+    return getStyleOption('emDelimiter') + content + getStyleOption('emDelimiter');
   });
 
   static final Rule strong = new Rule('strong', filters: ['strong', 'b'],
       replacement: (content, node) {
     if (content == null || content.trim().isEmpty) return '';
-    return styleOptions['strongDelimiter'] + content + styleOptions['strongDelimiter'];
+    return getStyleOption('strongDelimiter') + content + getStyleOption('strongDelimiter');
   });
 
   static final Rule code = new Rule('code', filterFn: (node) {
