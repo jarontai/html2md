@@ -156,9 +156,22 @@ abstract class _Rules {
         node.firstChild != null &&
         node.firstChild.nodeName == 'code';
   }, replacement: (content, node) {
+    var children = node.childNodes().toList();
+    if (children.length == 1) {
     return '\n\n    ' +
-        node.firstChild.textContent.replaceAll(new RegExp(r'\n'), '\n    ') +
+        children.first.textContent.replaceAll(new RegExp(r'\n'), '\n    ') +
         '\n\n';
+    } else {
+      var result = '\n\n    ';
+      for (var child in children) {
+        var text = child.textContent;
+        if (child != children.last) {
+          text = text.replaceAll(new RegExp(r'\n'), '\n    ');
+        }
+        result += text;
+      }
+      return result + '\n\n';
+    }
   });
 
   static final Rule fencedCodeBlock =
