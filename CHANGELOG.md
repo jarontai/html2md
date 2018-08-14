@@ -1,6 +1,6 @@
 # Changelog
 
-## 
+## 0.2.1
 - Fix dependency error
 
 ## 0.2.0
