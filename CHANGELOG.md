@@ -1,5 +1,8 @@
 # Changelog
 
+## 
+- Fix dependency error
+
 ## 0.2.0
 - Fix the multiple child issue of indentedCodeBlock rule
 - Support Dart 2
