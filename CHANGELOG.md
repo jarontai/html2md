@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.0
+- Fix the multiple child issue of indentedCodeBlock rule
+- Support Dart 2
+
 ## 0.1.7
 
 - Ignore invalid style options
