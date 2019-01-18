@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.0
+- Add ignore list
+
 ## 0.2.1
 - Fix dependency error
 

@@ -17,9 +17,10 @@ A simple usage example:
 
 ## Config
 
-You can config convert style by passing `styleOptions` to `convert`:
+You can config convert style by passing `styleOptions` to `convert`, elements that should be ignored also can be set with `ignore`:
 
-    html2md.convert(html, styleOptions: { 'headingStyle': 'atx' });
+    html2md.convert(html, styleOptions: { 'headingStyle': 'atx' }, ignore: ['script']);
+
 
 The default and available style options:
 
