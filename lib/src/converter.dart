@@ -14,13 +14,13 @@ final Set<Rule> _appendRuleSet = new Set<Rule>();
 final Map<String, String> _customOptions = <String, String>{};
 
 /// Convert [html] to markdown text.
-/// 
+///
 /// The root tag which should be converted can be set with [rootTag].
 /// The image base url can be set with [imageBaseUrl].
 /// Style options can be set with [styleOptions].
-/// 
+///
 /// The default and available style options:
-/// 
+///
 /// | Name        | Default           | Options  |
 /// | ------------- |:-------------:| -----:|
 /// | headingStyle      | "setext" | "setext", "atx" |
@@ -33,7 +33,13 @@ final Map<String, String> _customOptions = <String, String>{};
 /// | linkStyle      | "inlined" | "inlined", "referenced" |
 /// | linkReferenceStyle      | "full" | "full", "collapsed", "shortcut" |
 /// 
-String convert(String html, { String rootTag, String imageBaseUrl, Map<String, String> styleOptions }) {
+/// Elements list in [ignore] would be ingored.
+///
+String convert(String html,
+    {String rootTag,
+    String imageBaseUrl,
+    Map<String, String> styleOptions,
+    List<String> ignore}) {
   if (html == null || html.isEmpty) {
     return '';
   }
@@ -41,6 +47,9 @@ String convert(String html, { String rootTag, String imageBaseUrl, Map<String, S
     _customOptions['imageBaseUrl'] = imageBaseUrl;
   }
   updateStyleOptions(styleOptions);
+  if (ignore != null && ignore.isNotEmpty) {
+    Rule.addIgnore(ignore);
+  }
   var output = _process(new Node.root(html, rootTag: rootTag));
   return _postProcess(output);
 }

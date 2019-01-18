@@ -8,8 +8,10 @@ void main() {
     String html;
     String optionsHtml;
     String removeHtml;
+    String ignoreHtml;
 
     setUp(() {
+      ignoreHtml = '''<!DOCTYPE html><head><script>console.log("test");</script></head><body>Hello</body>''';
       removeHtml = '<out>out<hello><h1>HTML2MD Demo</h1></hello><noscript>Hello in noscript</noscript></out>';
       optionsHtml = '<h1>HTML2MD Demo</h1>';
       rootHtml = '<out>out<hello><h1>HTML2MD Demo</h1></hello></out>';
@@ -96,6 +98,10 @@ minSdkVersion 15
     test('Remove Test', () {
       expect(html2md.convert(removeHtml, rootTag: 'hello', styleOptions: { 'headingStyle': 'setext' }), '''HTML2MD Demo
 ============''');
+    });
+
+    test('Ignore Test', () {
+      expect(html2md.convert(ignoreHtml, ignore: ['script']), '''Hello''');
     });
   });
 }

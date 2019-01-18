@@ -60,6 +60,12 @@ class Rule {
         orElse: () => _Rules._defaultRule);
   }
 
+  static void addIgnore(List<String> names) {
+    if (names.isNotEmpty) {
+      _commonMarkRules.insert(0, _Rules._buildIgnoreRule(names));
+    }
+  }
+
   bool operator ==(dynamic other) {
     if (other is! Rule) return false;
     Rule rule = other;
@@ -74,6 +80,12 @@ class Rule {
 }
 
 abstract class _Rules {
+  static Rule _buildIgnoreRule(List<String> names) {
+    return new Rule('ignore', filters: names, replacement: (content, node) {
+      return '';
+    });
+  }
+
   static final Rule _blankRule =
       new Rule('blank', filters: ['blank'], replacement: (content, node) {
     return node.isBlock ? '\n\n' : '';
@@ -158,9 +170,9 @@ abstract class _Rules {
   }, replacement: (content, node) {
     var children = node.childNodes().toList();
     if (children.length == 1) {
-    return '\n\n    ' +
-        children.first.textContent.replaceAll(new RegExp(r'\n'), '\n    ') +
-        '\n\n';
+      return '\n\n    ' +
+          children.first.textContent.replaceAll(new RegExp(r'\n'), '\n    ') +
+          '\n\n';
     } else {
       var result = '\n\n    ';
       for (var child in children) {
@@ -245,13 +257,17 @@ abstract class _Rules {
   static final Rule emphasis =
       new Rule('emphasis', filters: ['em', 'i'], replacement: (content, node) {
     if (content == null || content.trim().isEmpty) return '';
-    return getStyleOption('emDelimiter') + content + getStyleOption('emDelimiter');
+    return getStyleOption('emDelimiter') +
+        content +
+        getStyleOption('emDelimiter');
   });
 
   static final Rule strong = new Rule('strong', filters: ['strong', 'b'],
       replacement: (content, node) {
     if (content == null || content.trim().isEmpty) return '';
-    return getStyleOption('strongDelimiter') + content + getStyleOption('strongDelimiter');
+    return getStyleOption('strongDelimiter') +
+        content +
+        getStyleOption('strongDelimiter');
   });
 
   static final Rule code = new Rule('code', filterFn: (node) {
