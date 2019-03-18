@@ -194,8 +194,8 @@ abstract class _Rules {
         node.firstChild.nodeName == 'code';
   }, replacement: (content, node) {
     var className = node.firstChild.className ?? '';
-    var language =
-        new RegExp(r'language-(\S+)').firstMatch(className).group(1) ?? '';
+    var languageMatched = new RegExp(r'language-(\S+)').firstMatch(className);
+    var language = languageMatched != null ? languageMatched.group(1) : className;
     return '\n\n' +
         getStyleOption('fence') +
         language +

@@ -9,6 +9,7 @@ void main() {
     String optionsHtml;
     String removeHtml;
     String ignoreHtml;
+    String codeblockHtml;
 
     setUp(() {
       ignoreHtml = '''<!DOCTYPE html><head><script>console.log("test");</script></head><body>Hello</body>''';
@@ -44,6 +45,7 @@ void main() {
 </ul>
 <pre>defaultConfig{<br>...<br>minSdkVersion 15<br>...<br>}</pre>
 ''';
+      codeblockHtml = '''<pre><code>print('Hello, world');</code></pre>''';
     });
 
     test('Html Test', () {
@@ -102,6 +104,12 @@ minSdkVersion 15
 
     test('Ignore Test', () {
       expect(html2md.convert(ignoreHtml, ignore: ['script']), '''Hello''');
+    });
+
+    test('CodeBlock fenced Test', () {
+      expect(html2md.convert(codeblockHtml, styleOptions: {'codeBlockStyle': 'fenced'}), '''```
+print('Hello, world');
+```''');
     });
   });
 }
