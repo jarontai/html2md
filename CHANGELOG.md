@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.1
+- fix fenced codeBlockStyle problem when codeblock has no className
+
 ## 0.3.0
 - Add ignore list
 
