@@ -32,7 +32,7 @@ final Map<String, String> _customOptions = <String, String>{};
 /// | strongDelimiter      | "**" | "**", "__" |
 /// | linkStyle      | "inlined" | "inlined", "referenced" |
 /// | linkReferenceStyle      | "full" | "full", "collapsed", "shortcut" |
-/// 
+///
 /// Elements list in [ignore] would be ingored.
 ///
 String convert(String html,
