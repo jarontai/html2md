@@ -2,15 +2,6 @@ import 'package:html/dom.dart' as dom;
 
 import 'options.dart' show removeTags;
 
-String repeat(String content, int times) {
-  return new List.filled(times, content).join();
-}
-
-dom.Node prepareRoot(dom.Node rootNode) {
-  dom.Node result = _collapseWhitespace(rootNode, removeTags);
-  return result;
-}
-
 const _kBlockElements = const [
   'address',
   'article',
@@ -82,6 +73,49 @@ const _kVoidElements = const [
   'wbr'
 ];
 
+bool hasVoid(dom.Node node) {
+  return node is dom.Element &&
+      _asElement(node).querySelectorAll(_kVoidElements.join(',')).isNotEmpty;
+}
+
+bool isBlock(dom.Node node) {
+  return _kBlockElements.contains(_asElement(node)?.localName?.toLowerCase());
+}
+
+bool isVoid(dom.Node node) {
+  return _kVoidElements.contains(_asElement(node)?.localName?.toLowerCase());
+}
+
+dom.Node nextSibling(dom.Node node) {
+  if (node.parentNode == null) return null;
+  var siblings = node.parentNode.nodes;
+  for (int i = siblings.indexOf(node) + 1; i < siblings.length; i++) {
+    var s = siblings[i];
+    return s;
+  }
+  return null;
+}
+
+dom.Node prepareRoot(dom.Node rootNode) {
+  dom.Node result = _collapseWhitespace(rootNode, removeTags);
+  return result;
+}
+
+dom.Node previousSibling(dom.Node node) {
+  if (node.parentNode == null) return null;
+  var siblings = node.parentNode.nodes;
+  for (int i = siblings.indexOf(node) - 1; i >= 0; i--) {
+    var s = siblings[i];
+    return s;
+  }
+  return null;
+}
+
+String repeat(String content, int times) {
+  return new List.filled(times, content).join();
+}
+
+// removes extraneous whitespace from the given element. 
 dom.Element _asElement(dom.Node node) {
   if (node is! dom.Element) {
     return null;
@@ -89,25 +123,6 @@ dom.Element _asElement(dom.Node node) {
   return node as dom.Element;
 }
 
-bool isBlock(dom.Node node) {
-  return _kBlockElements.indexOf(_asElement(node)?.localName?.toLowerCase()) != -1;
-}
-
-bool isVoid(dom.Node node) {
-  return _kVoidElements.indexOf(_asElement(node)?.localName?.toLowerCase()) != -1;
-}
-
-bool hasVoid(dom.Node node) {
-  return node is dom.Element &&
-      _asElement(node).querySelectorAll(_kVoidElements.join(',')).isNotEmpty;
-}
-
-bool _isPre(dom.Node node) {
-  return node is dom.Element &&
-      _asElement(node).localName.toLowerCase() == 'pre';
-}
-
-// removes extraneous whitespace from the given element. 
 dom.Node _collapseWhitespace(dom.Node domNode, List<String> removeTags) {
   if (domNode.firstChild == null || _isPre(domNode)) return domNode;
 
@@ -173,6 +188,11 @@ dom.Node _collapseWhitespace(dom.Node domNode, List<String> removeTags) {
   return domNode;
 }
 
+bool _isPre(dom.Node node) {
+  return node is dom.Element &&
+      _asElement(node).localName.toLowerCase() == 'pre';
+}
+
 dom.Node _nextNode(dom.Node prev, dom.Node current) {
   if ((prev != null && prev.parentNode == current) || _isPre(current)) {
     return nextSibling(current) ?? current.parentNode;
@@ -184,24 +204,4 @@ dom.Node _remove(dom.Node node) {
   var next = nextSibling(node) ?? node.parentNode;
   node.remove();
   return next;
-}
-
-dom.Node previousSibling(dom.Node node) {
-  if (node.parentNode == null) return null;
-  var siblings = node.parentNode.nodes;
-  for (int i = siblings.indexOf(node) - 1; i >= 0; i--) {
-    var s = siblings[i];
-    return s;
-  }
-  return null;
-}
-
-dom.Node nextSibling(dom.Node node) {
-  if (node.parentNode == null) return null;
-  var siblings = node.parentNode.nodes;
-  for (int i = siblings.indexOf(node) + 1; i < siblings.length; i++) {
-    var s = siblings[i];
-    return s;
-  }
-  return null;
 }

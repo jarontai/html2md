@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.2
+- Update analysis_options.yaml
+- Cleanup source code
+- Bump dependencies
+
 ## 0.3.1
 - fix fenced codeBlockStyle problem when codeblock has no className
 

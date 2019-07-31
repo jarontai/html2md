@@ -1,13 +1,6 @@
 import 'node.dart';
-import 'utils.dart' as util;
-
 import 'options.dart' show getStyleOption;
-
-typedef String _Replacement(String content, Node node);
-typedef bool _FilterFn(Node node);
-typedef String _Append();
-
-final List<String> _linkReferences = [];
+import 'utils.dart' as util;
 
 final _commonMarkRules = [
   _Rules.paragraph,
@@ -27,6 +20,14 @@ final _commonMarkRules = [
   _Rules.image,
 ];
 
+final List<String> _linkReferences = [];
+
+typedef String _Append();
+
+typedef bool _FilterFn(Node node);
+
+typedef String _Replacement(String content, Node node);
+
 class Rule {
   final String name;
   final List<String> filters;
@@ -38,15 +39,25 @@ class Rule {
   Rule(this.name, {this.filters, this.filterFn, this.replacement, this.append})
       : _realFilterFn = _buildFilterFn(filters, filterFn);
 
-  static _FilterFn _buildFilterFn(List<String> filters, _FilterFn filterFn) {
-    _FilterFn result;
-    if (filters != null && filters.isNotEmpty) {
-      result = (Node node) => filters.contains(node.nodeName.toLowerCase());
-    }
-    return result ?? filterFn;
+  int get hashCode {
+    int result = 17;
+    result = 37 * result + name.hashCode;
+    return result;
+  }
+
+  bool operator ==(dynamic other) {
+    if (other is! Rule) return false;
+    Rule rule = other;
+    return rule.name == name;
   }
 
   bool _check(Node node) => _realFilterFn == null ? false : _realFilterFn(node);
+
+  static void addIgnore(List<String> names) {
+    if (names.isNotEmpty) {
+      _commonMarkRules.insert(0, _Rules._buildIgnoreRule(names));
+    }
+  }
 
   static Rule findRule(Node node, [List<Rule> customRules]) {
     if (customRules != null) {
@@ -60,32 +71,16 @@ class Rule {
         orElse: () => _Rules._defaultRule);
   }
 
-  static void addIgnore(List<String> names) {
-    if (names.isNotEmpty) {
-      _commonMarkRules.insert(0, _Rules._buildIgnoreRule(names));
+  static _FilterFn _buildFilterFn(List<String> filters, _FilterFn filterFn) {
+    _FilterFn result;
+    if (filters != null && filters.isNotEmpty) {
+      result = (Node node) => filters.contains(node.nodeName.toLowerCase());
     }
-  }
-
-  bool operator ==(dynamic other) {
-    if (other is! Rule) return false;
-    Rule rule = other;
-    return rule.name == name;
-  }
-
-  int get hashCode {
-    int result = 17;
-    result = 37 * result + name.hashCode;
-    return result;
+    return result ?? filterFn;
   }
 }
 
 abstract class _Rules {
-  static Rule _buildIgnoreRule(List<String> names) {
-    return new Rule('ignore', filters: names, replacement: (content, node) {
-      return '';
-    });
-  }
-
   static final Rule _blankRule =
       new Rule('blank', filters: ['blank'], replacement: (content, node) {
     return node.isBlock ? '\n\n' : '';
@@ -195,7 +190,8 @@ abstract class _Rules {
   }, replacement: (content, node) {
     var className = node.firstChild.className ?? '';
     var languageMatched = new RegExp(r'language-(\S+)').firstMatch(className);
-    var language = languageMatched != null ? languageMatched.group(1) : className;
+    var language =
+        languageMatched != null ? languageMatched.group(1) : className;
     return '\n\n' +
         getStyleOption('fence') +
         language +
@@ -286,7 +282,7 @@ abstract class _Rules {
     if (matches != null && matches.isNotEmpty) {
       if (new RegExp(r'^`').hasMatch(content)) leadingSpace = ' ';
       if (new RegExp(r'`$').hasMatch(content)) trailingSpace = ' ';
-      while (matches.indexOf(delimiter) != -1) {
+      while (matches.contains(delimiter)) {
         delimiter = delimiter + '`';
       }
     }
@@ -301,4 +297,10 @@ abstract class _Rules {
     var titlePart = title.isNotEmpty ? ' "' + title + '"' : '';
     return src.isNotEmpty ? '![' + alt + ']' + '(' + src + titlePart + ')' : '';
   });
+
+  static Rule _buildIgnoreRule(List<String> names) {
+    return new Rule('ignore', filters: names, replacement: (content, node) {
+      return '';
+    });
+  }
 }

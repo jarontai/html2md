@@ -11,19 +11,7 @@ final _styleMap = <String, _StyleOption>{
   'br': new _StyleOption(['  ']),
 };
 
-class _StyleOption {
-  int defaultIndex;
-  final List<String> options;
-  _StyleOption(this.options, {this.defaultIndex = 0});
-  String get style => options[defaultIndex];
-  set style(String style) {
-    var index = options.indexOf(style);
-    // Ignore invalid option
-    if (index > -1) {
-      defaultIndex = index;
-    }
-  }
-}
+List<String> get removeTags => ['noscript'];
 
 String getStyleOption(String name) => _styleMap[name]?.style ?? '';
 
@@ -38,4 +26,16 @@ updateStyleOptions(Map<String, String> customOptions) {
   }
 }
 
-List<String> get removeTags => ['noscript'];
+class _StyleOption {
+  int defaultIndex;
+  final List<String> options;
+  _StyleOption(this.options, {this.defaultIndex = 0});
+  String get style => options[defaultIndex];
+  set style(String style) {
+    var index = options.indexOf(style);
+    // Ignore invalid option
+    if (index > -1) {
+      defaultIndex = index;
+    }
+  }
+}

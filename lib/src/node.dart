@@ -1,31 +1,12 @@
-import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart' as dom;
+import 'package:html/parser.dart' show parse;
 
 import 'utils.dart' as util;
 
 class Node {
   dom.Node _node;
-  dom.Node get node => _node;
   dom.Element _el;
   dom.Text _text;
-
-  Node get firstChild {
-    if (_el != null && _el.firstChild != null) {
-      return new Node(_el.firstChild);
-    }
-    return null;
-  }
-
-  factory Node.root(String html, { String rootTag }) {
-    var doc = parse(html);
-    dom.Element root;
-    if (rootTag != null && rootTag.isNotEmpty) {
-      root = doc.getElementsByTagName(rootTag).first;
-    }
-    root ??= doc.getElementsByTagName('html').first;
-    return new Node(util.prepareRoot(root));
-  }
-
   Node(dom.Node domNode) {
     _node = domNode;
     if (domNode is dom.Element) {
@@ -36,41 +17,33 @@ class Node {
     }
   }
 
-  Iterable<Node> childNodes() sync* {
-    for (dom.Node node in _el.nodes) {
-      yield new Node(node);
+  factory Node.root(String html, {String rootTag}) {
+    var doc = parse(html);
+    dom.Element root;
+    if (rootTag != null && rootTag.isNotEmpty) {
+      root = doc.getElementsByTagName(rootTag).first;
     }
+    root ??= doc.getElementsByTagName('html').first;
+    return new Node(util.prepareRoot(root));
   }
 
-  dom.Element asElement() => _el;
+  String get className => _el?.className ?? '';
 
-  int get nodeType => _el?.nodeType ?? _node.nodeType;
-
-  String get outerHTML => _el?.outerHtml ?? '';
+  Node get firstChild {
+    if (_el != null && _el.firstChild != null) {
+      return new Node(_el.firstChild);
+    }
+    return null;
+  }
 
   bool get hasSiblings =>
       (util.nextSibling(node) != null) || (util.previousSibling(node) != null);
 
-  String get className => _el?.className ?? '';
-
-  String get textContent => _text?.data ?? _el?.text ?? '';
-
-  String get nodeName => _el != null ? _el.localName.toLowerCase() : '';
-
-  String get parentElName => (_el != null && _el.parent != null) ? _el.parent.localName.toLowerCase() : '';
-
-  dom.Node get nextSibling => util.nextSibling(node);
-
-  bool get isParentLastChild => _node.parent.children.last == _el;
-
-  int get parentChildIndex => _node.parent != null ? _node.parent.children.indexOf(_el) : -1;
-
-  String getAttribute(String name) {
-    return _el.attributes[name];
-  }
-
-  String getParentAttribute(String name) {
-    return _el.parent.attributes[name];
+  bool get isBlank {
+    return ['a', 'th', 'td'].contains(nodeName) &&
+        new RegExp(r'^\s*$', caseSensitive: false).hasMatch(textContent) &&
+        !util.isVoid(_el) &&
+        !util.hasVoid(_el);
   }
 
   bool get isBlock => util.isBlock(_el);
@@ -83,10 +56,40 @@ class Node {
             : false);
   }
 
-  bool get isBlank {
-    return ['a', 'th', 'td'].indexOf(nodeName) == -1 &&
-        new RegExp(r'^\s*$', caseSensitive: false).hasMatch(textContent) &&
-        !util.isVoid(_el) &&
-        !util.hasVoid(_el);
+  bool get isParentLastChild => _node.parent.children.last == _el;
+
+  dom.Node get nextSibling => util.nextSibling(node);
+
+  dom.Node get node => _node;
+
+  String get nodeName => _el != null ? _el.localName.toLowerCase() : '';
+
+  int get nodeType => _el?.nodeType ?? _node.nodeType;
+
+  String get outerHTML => _el?.outerHtml ?? '';
+
+  int get parentChildIndex =>
+      _node.parent != null ? _node.parent.children.indexOf(_el) : -1;
+
+  String get parentElName => (_el != null && _el.parent != null)
+      ? _el.parent.localName.toLowerCase()
+      : '';
+
+  String get textContent => _text?.data ?? _el?.text ?? '';
+
+  dom.Element asElement() => _el;
+
+  Iterable<Node> childNodes() sync* {
+    for (dom.Node node in _el.nodes) {
+      yield new Node(node);
+    }
+  }
+
+  String getAttribute(String name) {
+    return _el.attributes[name];
+  }
+
+  String getParentAttribute(String name) {
+    return _el.parent.attributes[name];
   }
 }
