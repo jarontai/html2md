@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.3
+- Avoid parsing ol's empty start attribute
+
 ## 0.3.2
 - Update analysis_options.yaml
 - Cleanup source code

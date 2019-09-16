@@ -139,11 +139,15 @@ abstract class _Rules {
     var prefix = getStyleOption('bulletListMarker') + '   ';
     if (node.parentElName == 'ol') {
       var start = -1;
-      try {
-        start = int.parse(node.getParentAttribute('start'));
-      } catch (e) {
-        print('listItem parse start error $e');
+      var startAttr = node.getParentAttribute('start');
+      if (startAttr != null && startAttr.isNotEmpty) {
+        try {
+          start = int.parse(startAttr);
+        } catch (e) {
+          print('listItem parse start error $e');
+        }
       }
+
       var index = (start > -1)
           ? start + node.parentChildIndex
           : node.parentChildIndex + 1;

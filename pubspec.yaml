@@ -1,6 +1,6 @@
 name: html2md
 description: Convert html to markdown in Dart.
-version: 0.3.2
+version: 0.3.3
 homepage: https://github.com/jarontai/html2md
 authors:
   - jarontai <jaroncn@gmail.com>
