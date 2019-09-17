@@ -3,38 +3,38 @@ import 'options.dart' show getStyleOption;
 import 'utils.dart' as util;
 
 final _commonMarkRules = [
-  _Rules.paragraph,
-  _Rules.lineBreak,
-  _Rules.heading,
-  _Rules.blockquote,
-  _Rules.list,
-  _Rules.listItem,
-  _Rules.indentedCodeBlock,
-  _Rules.fencedCodeBlock,
-  _Rules.horizontalRule,
-  _Rules.inlineLink,
-  _Rules.referenceLink,
-  _Rules.emphasis,
-  _Rules.strong,
-  _Rules.code,
-  _Rules.image,
+  _CommonRules.paragraph,
+  _CommonRules.lineBreak,
+  _CommonRules.heading,
+  _CommonRules.blockquote,
+  _CommonRules.list,
+  _CommonRules.listItem,
+  _CommonRules.indentedCodeBlock,
+  _CommonRules.fencedCodeBlock,
+  _CommonRules.horizontalRule,
+  _CommonRules.inlineLink,
+  _CommonRules.referenceLink,
+  _CommonRules.emphasis,
+  _CommonRules.strong,
+  _CommonRules.code,
+  _CommonRules.image,
 ];
 
 final List<String> _linkReferences = [];
 
-typedef String _Append();
+typedef Append = String Function();
 
-typedef bool _FilterFn(Node node);
+typedef FilterFn = bool Function(Node node);
 
-typedef String _Replacement(String content, Node node);
+typedef Replacement = String Function(String content, Node node);
 
 class Rule {
   final String name;
   final List<String> filters;
-  final _FilterFn filterFn;
-  final _Replacement replacement;
-  final _Append append;
-  final _FilterFn _realFilterFn;
+  final FilterFn filterFn;
+  final Replacement replacement;
+  final Append append;
+  final FilterFn _realFilterFn;
 
   Rule(this.name, {this.filters, this.filterFn, this.replacement, this.append})
       : _realFilterFn = _buildFilterFn(filters, filterFn);
@@ -55,7 +55,7 @@ class Rule {
 
   static void addIgnore(List<String> names) {
     if (names.isNotEmpty) {
-      _commonMarkRules.insert(0, _Rules._buildIgnoreRule(names));
+      _commonMarkRules.insert(0, _BaseRules.buildIgnoreRule(names));
     }
   }
 
@@ -66,13 +66,13 @@ class Rule {
       if (customRule != null) return customRule;
     }
 
-    if (node.isBlank) return _Rules._blankRule;
+    if (node.isBlank) return _BaseRules.blankRule;
     return _commonMarkRules.firstWhere((rule) => rule._check(node),
-        orElse: () => _Rules._defaultRule);
+        orElse: () => _BaseRules.defaultRule);
   }
 
-  static _FilterFn _buildFilterFn(List<String> filters, _FilterFn filterFn) {
-    _FilterFn result;
+  static FilterFn _buildFilterFn(List<String> filters, FilterFn filterFn) {
+    FilterFn result;
     if (filters != null && filters.isNotEmpty) {
       result = (Node node) => filters.contains(node.nodeName.toLowerCase());
     }
@@ -80,17 +80,25 @@ class Rule {
   }
 }
 
-abstract class _Rules {
-  static final Rule _blankRule =
+abstract class _BaseRules {
+  static final Rule blankRule =
       new Rule('blank', filters: ['blank'], replacement: (content, node) {
     return node.isBlock ? '\n\n' : '';
   });
 
-  static final Rule _defaultRule =
+  static final Rule defaultRule =
       new Rule('default', filters: ['default'], replacement: (content, node) {
     return node.isBlock ? '\n\n' + content + '\n\n' : content;
   });
 
+  static Rule buildIgnoreRule(List<String> names) {
+    return new Rule('ignore', filters: names, replacement: (content, node) {
+      return '';
+    });
+  }
+}
+
+abstract class _CommonRules {
   static final Rule paragraph =
       new Rule('paragraph', filters: ['p'], replacement: (content, node) {
     return '\n\n$content\n\n';
@@ -301,10 +309,4 @@ abstract class _Rules {
     var titlePart = title.isNotEmpty ? ' "' + title + '"' : '';
     return src.isNotEmpty ? '![' + alt + ']' + '(' + src + titlePart + ')' : '';
   });
-
-  static Rule _buildIgnoreRule(List<String> names) {
-    return new Rule('ignore', filters: names, replacement: (content, node) {
-      return '';
-    });
-  }
 }
