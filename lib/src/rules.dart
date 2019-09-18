@@ -18,6 +18,10 @@ final _commonMarkRules = [
   _CommonRules.strong,
   _CommonRules.code,
   _CommonRules.image,
+  _TableRules.table,
+  _TableRules.thead,
+  _TableRules.tr,
+  _TableRules.td,
 ];
 
 final List<String> _linkReferences = [];
@@ -308,5 +312,42 @@ abstract class _CommonRules {
     var title = node.getAttribute('title') ?? '';
     var titlePart = title.isNotEmpty ? ' "' + title + '"' : '';
     return src.isNotEmpty ? '![' + alt + ']' + '(' + src + titlePart + ')' : '';
+  });
+}
+
+abstract class _TableRules {
+  static final Rule table =
+      new Rule('table', filters: ['table'], replacement: (content, node) {
+    return '\n$content\n';
+  });
+
+  static final Rule tr =
+      new Rule('tr', filters: ['tr'], replacement: (content, node) {
+    return '$content\n';
+  });
+
+  static final Rule thead =
+      new Rule('thead', filters: ['th', 'thead'], replacement: (content, node) {
+    var result = ' $content |';
+    if (node.isParentFirstChild) {
+      result = '| $content |';
+    }
+    if (node.isParentLastChild) {
+      var sb = new StringBuffer('|');
+      for (var i = 0; i < node.siblingNum; i++) {
+        sb.write(' ----- |');
+      }
+      result = '$result\n${sb.toString()}';
+    }
+    return result;
+  });
+
+  static final Rule td =
+      new Rule('td', filters: ['td'], replacement: (content, node) {
+    var result = ' $content |';
+    if (node.isParentFirstChild) {
+      result = '| $content |';
+    }
+    return result;
   });
 }

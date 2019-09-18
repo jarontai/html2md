@@ -2,7 +2,7 @@ import 'package:html2md/html2md.dart' as html2md;
 import 'package:test/test.dart';
 
 void main() {
-  group('HTML2MD tests', () {
+  group('Common tests', () {
     String rootHtml;
     String imageHtml;
     String html;
@@ -12,8 +12,10 @@ void main() {
     String codeblockHtml;
 
     setUp(() {
-      ignoreHtml = '''<!DOCTYPE html><head><script>console.log("test");</script></head><body>Hello</body>''';
-      removeHtml = '<out>out<hello><h1>HTML2MD Demo</h1></hello><noscript>Hello in noscript</noscript></out>';
+      ignoreHtml =
+          '''<!DOCTYPE html><head><script>console.log("test");</script></head><body>Hello</body>''';
+      removeHtml =
+          '<out>out<hello><h1>HTML2MD Demo</h1></hello><noscript>Hello in noscript</noscript></out>';
       optionsHtml = '<h1>HTML2MD Demo</h1>';
       rootHtml = '<out>out<hello><h1>HTML2MD Demo</h1></hello></out>';
       imageHtml = '<hello><img alt="image" src="folder/image.png" /></hello>';
@@ -48,7 +50,7 @@ void main() {
       codeblockHtml = '''<pre><code>print('Hello, world');</code></pre>''';
     });
 
-    test('Html Test', () {
+    test('Basic Test', () {
       var out = '''HTML2MD Demo
 ============
 
@@ -81,7 +83,7 @@ defaultConfig{
 minSdkVersion 15  
 ...  
 }''';
-      expect(html2md.convert(html), out) ;
+      expect(html2md.convert(html), out);
     });
 
     test('Root Test', () {
@@ -90,15 +92,21 @@ minSdkVersion 15
     });
 
     test('Img Test', () {
-      expect(html2md.convert(imageHtml, imageBaseUrl: 'http://www.test.com'), '![image](http://www.test.com/folder/image.png)');
+      expect(html2md.convert(imageHtml, imageBaseUrl: 'http://www.test.com'),
+          '![image](http://www.test.com/folder/image.png)');
     });
 
     test('Options Test', () {
-      expect(html2md.convert(optionsHtml, styleOptions: { 'headingStyle': 'atx' }), '''# HTML2MD Demo''');
+      expect(
+          html2md.convert(optionsHtml, styleOptions: {'headingStyle': 'atx'}),
+          '''# HTML2MD Demo''');
     });
 
     test('Remove Test', () {
-      expect(html2md.convert(removeHtml, rootTag: 'hello', styleOptions: { 'headingStyle': 'setext' }), '''HTML2MD Demo
+      expect(
+          html2md.convert(removeHtml,
+              rootTag: 'hello', styleOptions: {'headingStyle': 'setext'}),
+          '''HTML2MD Demo
 ============''');
     });
 
@@ -107,7 +115,10 @@ minSdkVersion 15
     });
 
     test('CodeBlock fenced Test', () {
-      expect(html2md.convert(codeblockHtml, styleOptions: {'codeBlockStyle': 'fenced'}), '''```
+      expect(
+          html2md.convert(codeblockHtml,
+              styleOptions: {'codeBlockStyle': 'fenced'}),
+          '''```
 print('Hello, world');
 ```''');
     });

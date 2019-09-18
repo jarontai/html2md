@@ -27,6 +27,8 @@ class Node {
     return new Node(util.prepareRoot(root));
   }
 
+  int get childNum => _el != null ? _el.children.length : 0;
+
   String get className => _el?.className ?? '';
 
   Node get firstChild {
@@ -56,6 +58,8 @@ class Node {
             : false);
   }
 
+  bool get isParentFirstChild => _node.parent.children.first == _el;
+
   bool get isParentLastChild => _node.parent.children.last == _el;
 
   dom.Node get nextSibling => util.nextSibling(node);
@@ -74,6 +78,8 @@ class Node {
   String get parentElName => (_el != null && _el.parent != null)
       ? _el.parent.localName.toLowerCase()
       : '';
+
+  int get siblingNum => util.countSiblingEl(node);
 
   String get textContent => _text?.data ?? _el?.text ?? '';
 

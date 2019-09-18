@@ -96,6 +96,17 @@ dom.Node nextSibling(dom.Node node) {
   return null;
 }
 
+int countSiblingEl(dom.Node node) {
+  if (node.parentNode == null) return 0;
+  var count = 0;
+  node.parentNode.nodes.forEach((node) {
+    if (node is dom.Element) {
+      count++;
+    }
+  });
+  return count;
+}
+
 dom.Node prepareRoot(dom.Node rootNode) {
   dom.Node result = _collapseWhitespace(rootNode, removeTags);
   return result;
@@ -115,7 +126,7 @@ String repeat(String content, int times) {
   return new List.filled(times, content).join();
 }
 
-// removes extraneous whitespace from the given element. 
+// removes extraneous whitespace from the given element.
 dom.Element _asElement(dom.Node node) {
   if (node is! dom.Element) {
     return null;

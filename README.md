@@ -36,6 +36,41 @@ The default and available style options:
 | linkStyle      | "inlined" | "inlined", "referenced" |
 | linkReferenceStyle      | "full" | "full", "collapsed", "shortcut" |
 
+## Table support
+
+Basic table converting is supported! 
+
+Html table source:
+
+    <table>
+        <tr>
+            <th>First Header</th>
+            <th>First Header</th> 
+        </tr>
+        <tr>
+            <td>Content Cell</td>
+            <td>Content Cell</td>
+        </tr>
+        <tr>
+            <td>Content Cell</td>
+            <td>Content Cell</td>
+        </tr>
+    </table>
+
+The converted markdown source:
+
+    | First Header  | Second Header |
+    | ----- | ----- |
+    | Content Cell  | Content Cell  |
+    | Content Cell  | Content Cell  |
+
+The converted markdown table:
+
+| First Header  | Second Header |
+| ----- | ----- |
+| Content Cell  | Content Cell  |
+| Content Cell  | Content Cell  |
+
 ## Test
 
     pub run test
