@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.1
+- Fix the replacement of thead and tbody
+
 ## 0.5.0
 - Add basic table support
 
