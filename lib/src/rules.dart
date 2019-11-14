@@ -19,7 +19,8 @@ final _commonMarkRules = [
   _CommonRules.code,
   _CommonRules.image,
   _TableRules.table,
-  _TableRules.thead,
+  _TableRules.tHeadBody,
+  _TableRules.th,
   _TableRules.tr,
   _TableRules.td,
 ];
@@ -326,8 +327,13 @@ abstract class _TableRules {
     return '$content\n';
   });
 
-  static final Rule thead =
-      new Rule('thead', filters: ['th', 'thead'], replacement: (content, node) {
+  static final Rule tHeadBody =
+      new Rule('tHeadBody', filters: ['thead', 'tbody'], replacement: (content, node) {
+    return '$content';
+  });
+
+  static final Rule th =
+      new Rule('th', filters: ['th'], replacement: (content, node) {
     var result = ' $content |';
     if (node.isParentFirstChild) {
       result = '| $content |';
