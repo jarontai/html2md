@@ -1,26 +1,26 @@
 final _styleMap = <String, _StyleOption>{
-  'headingStyle': new _StyleOption(['setext', 'atx']),
-  'hr': new _StyleOption(['* * *', '- - -', '_ _ _']),
-  'bulletListMarker': new _StyleOption(['*', '-', '_']),
-  'codeBlockStyle': new _StyleOption(['indented', 'fenced']),
-  'fence': new _StyleOption(['```', '~~~']),
-  'emDelimiter': new _StyleOption(['_', '*']),
-  'strongDelimiter': new _StyleOption(['**', '__']),
-  'linkStyle': new _StyleOption(['inlined', 'referenced']),
-  'linkReferenceStyle': new _StyleOption(['full', 'collapsed', 'shortcut']),
-  'br': new _StyleOption(['  ']),
+  'headingStyle': _StyleOption(['setext', 'atx']),
+  'hr': _StyleOption(['* * *', '- - -', '_ _ _']),
+  'bulletListMarker': _StyleOption(['*', '-', '_']),
+  'codeBlockStyle': _StyleOption(['indented', 'fenced']),
+  'fence': _StyleOption(['```', '~~~']),
+  'emDelimiter': _StyleOption(['_', '*']),
+  'strongDelimiter': _StyleOption(['**', '__']),
+  'linkStyle': _StyleOption(['inlined', 'referenced']),
+  'linkReferenceStyle': _StyleOption(['full', 'collapsed', 'shortcut']),
+  'br': _StyleOption(['  ']),
 };
 
 List<String> get removeTags => ['noscript'];
 
 String getStyleOption(String name) => _styleMap[name]?.style ?? '';
 
-updateStyleOptions(Map<String, String> customOptions) {
+void updateStyleOptions(Map<String, String>? customOptions) {
   if (customOptions != null && customOptions.isNotEmpty) {
     var names = _styleMap.keys;
     customOptions.forEach((key, val) {
       if (names.contains(key)) {
-        _styleMap[key].style = val;
+        _styleMap[key]!.style = val;
       }
     });
   }

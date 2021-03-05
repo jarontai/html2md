@@ -1,3 +1,5 @@
+import 'package:collection/collection.dart' show IterableExtension;
+
 import 'node.dart';
 import 'options.dart' show getStyleOption;
 import 'utils.dart' as util;
@@ -35,28 +37,31 @@ typedef Replacement = String Function(String content, Node node);
 
 class Rule {
   final String name;
-  final List<String> filters;
-  final FilterFn filterFn;
-  final Replacement replacement;
-  final Append append;
-  final FilterFn _realFilterFn;
+  final List<String>? filters;
+  final FilterFn? filterFn;
+  final Replacement? replacement;
+  final Append? append;
+  final FilterFn? _realFilterFn;
 
   Rule(this.name, {this.filters, this.filterFn, this.replacement, this.append})
       : _realFilterFn = _buildFilterFn(filters, filterFn);
 
+  @override
   int get hashCode {
-    int result = 17;
+    var result = 17;
     result = 37 * result + name.hashCode;
     return result;
   }
 
+  @override
   bool operator ==(dynamic other) {
     if (other is! Rule) return false;
-    Rule rule = other;
+    var rule = other;
     return rule.name == name;
   }
 
-  bool _check(Node node) => _realFilterFn == null ? false : _realFilterFn(node);
+  bool _check(Node node) =>
+      _realFilterFn == null ? false : _realFilterFn!(node);
 
   static void addIgnore(List<String> names) {
     if (names.isNotEmpty) {
@@ -64,10 +69,10 @@ class Rule {
     }
   }
 
-  static Rule findRule(Node node, [List<Rule> customRules]) {
+  static Rule findRule(Node node, [List<Rule>? customRules]) {
     if (customRules != null) {
-      var customRule = customRules.firstWhere((rule) => rule._check(node),
-          orElse: () => null);
+      var customRule =
+          customRules.firstWhereOrNull((rule) => rule._check(node));
       if (customRule != null) return customRule;
     }
 
@@ -76,8 +81,8 @@ class Rule {
         orElse: () => _BaseRules.defaultRule);
   }
 
-  static FilterFn _buildFilterFn(List<String> filters, FilterFn filterFn) {
-    FilterFn result;
+  static FilterFn? _buildFilterFn(List<String>? filters, FilterFn? filterFn) {
+    FilterFn? result;
     if (filters != null && filters.isNotEmpty) {
       result = (Node node) => filters.contains(node.nodeName.toLowerCase());
     }
@@ -87,17 +92,17 @@ class Rule {
 
 abstract class _BaseRules {
   static final Rule blankRule =
-      new Rule('blank', filters: ['blank'], replacement: (content, node) {
+      Rule('blank', filters: ['blank'], replacement: (content, node) {
     return node.isBlock ? '\n\n' : '';
   });
 
   static final Rule defaultRule =
-      new Rule('default', filters: ['default'], replacement: (content, node) {
+      Rule('default', filters: ['default'], replacement: (content, node) {
     return node.isBlock ? '\n\n' + content + '\n\n' : content;
   });
 
   static Rule buildIgnoreRule(List<String> names) {
-    return new Rule('ignore', filters: names, replacement: (content, node) {
+    return Rule('ignore', filters: names, replacement: (content, node) {
       return '';
     });
   }
@@ -105,17 +110,17 @@ abstract class _BaseRules {
 
 abstract class _CommonRules {
   static final Rule paragraph =
-      new Rule('paragraph', filters: ['p'], replacement: (content, node) {
+      Rule('paragraph', filters: ['p'], replacement: (content, node) {
     return '\n\n$content\n\n';
   });
 
   static final Rule lineBreak =
-      new Rule('lineBreak', filters: ['br'], replacement: (content, node) {
+      Rule('lineBreak', filters: ['br'], replacement: (content, node) {
     return '${getStyleOption('br')}\n';
   });
 
   static final Rule heading =
-      new Rule('heading', filters: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+      Rule('heading', filters: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
           replacement: (content, node) {
     var hLevel = int.parse(node.nodeName.substring(1, 2));
     if (getStyleOption('headingStyle') == 'setext' && hLevel < 3) {
@@ -126,16 +131,16 @@ abstract class _CommonRules {
     }
   });
 
-  static final Rule blockquote = new Rule('blockquote', filters: ['blockquote'],
-      replacement: (content, node) {
+  static final Rule blockquote =
+      Rule('blockquote', filters: ['blockquote'], replacement: (content, node) {
     var convertContent = content
-        .replaceAll(new RegExp(r'^\n+|\n+$'), '')
-        .replaceAll(new RegExp(r'^', multiLine: true), '> ');
+        .replaceAll(RegExp(r'^\n+|\n+$'), '')
+        .replaceAll(RegExp(r'^', multiLine: true), '> ');
     return '\n\n$convertContent\n\n';
   });
 
   static final Rule list =
-      new Rule('list', filters: ['ul', 'ol'], replacement: (content, node) {
+      Rule('list', filters: ['ul', 'ol'], replacement: (content, node) {
     if (node.parentElName == 'li' && node.isParentLastChild) {
       return '\n$content';
     } else {
@@ -144,11 +149,11 @@ abstract class _CommonRules {
   });
 
   static final Rule listItem =
-      new Rule('listItem', filters: ['li'], replacement: (content, node) {
+      Rule('listItem', filters: ['li'], replacement: (content, node) {
     var convertContent = content
-        .replaceAll(new RegExp(r'^\n+'), '')
-        .replaceAll(new RegExp(r'\n+$'), '\n')
-        .replaceAll(new RegExp('\n', multiLine: true), '\n    ');
+        .replaceAll(RegExp(r'^\n+'), '')
+        .replaceAll(RegExp(r'\n+$'), '\n')
+        .replaceAll(RegExp('\n', multiLine: true), '\n    ');
     var prefix = getStyleOption('bulletListMarker') + '   ';
     if (node.parentElName == 'ol') {
       var start = -1;
@@ -166,31 +171,31 @@ abstract class _CommonRules {
           : node.parentChildIndex + 1;
       prefix = '$index.  ';
     }
-    var postfix = ((node.nextSibling != null) &&
-            !new RegExp(r'\n$').hasMatch(convertContent))
-        ? '\n'
-        : '';
+    var postfix =
+        ((node.nextSibling != null) && !RegExp(r'\n$').hasMatch(convertContent))
+            ? '\n'
+            : '';
     return '$prefix$convertContent$postfix';
   });
 
   static final Rule indentedCodeBlock =
-      new Rule('indentedCodeBlock', filterFn: (node) {
+      Rule('indentedCodeBlock', filterFn: (node) {
     return getStyleOption('codeBlockStyle') == 'indented' &&
         node.nodeName == 'pre' &&
         node.firstChild != null &&
-        node.firstChild.nodeName == 'code';
+        node.firstChild!.nodeName == 'code';
   }, replacement: (content, node) {
     var children = node.childNodes().toList();
     if (children.length == 1) {
       return '\n\n    ' +
-          children.first.textContent.replaceAll(new RegExp(r'\n'), '\n    ') +
+          children.first.textContent.replaceAll(RegExp(r'\n'), '\n    ') +
           '\n\n';
     } else {
       var result = '\n\n    ';
       for (var child in children) {
         var text = child.textContent;
         if (child != children.last) {
-          text = text.replaceAll(new RegExp(r'\n'), '\n    ');
+          text = text.replaceAll(RegExp(r'\n'), '\n    ');
         }
         result += text;
       }
@@ -198,43 +203,42 @@ abstract class _CommonRules {
     }
   });
 
-  static final Rule fencedCodeBlock =
-      new Rule('fencedCodeBlock', filterFn: (node) {
+  static final Rule fencedCodeBlock = Rule('fencedCodeBlock', filterFn: (node) {
     return getStyleOption('codeBlockStyle') == 'fenced' &&
         node.nodeName == 'pre' &&
         node.firstChild != null &&
-        node.firstChild.nodeName == 'code';
+        node.firstChild!.nodeName == 'code';
   }, replacement: (content, node) {
-    var className = node.firstChild.className ?? '';
-    var languageMatched = new RegExp(r'language-(\S+)').firstMatch(className);
+    var className = node.firstChild!.className;
+    var languageMatched = RegExp(r'language-(\S+)').firstMatch(className);
     var language =
-        languageMatched != null ? languageMatched.group(1) : className;
+        languageMatched != null ? languageMatched.group(1)! : className;
     return '\n\n' +
         getStyleOption('fence') +
         language +
         '\n' +
-        node.firstChild.textContent +
+        node.firstChild!.textContent +
         '\n' +
         getStyleOption('fence') +
         '\n\n';
   });
 
   static final Rule horizontalRule =
-      new Rule('horizontalRule', filters: ['hr'], replacement: (content, node) {
+      Rule('horizontalRule', filters: ['hr'], replacement: (content, node) {
     return '${getStyleOption('hr')}\n';
   });
 
-  static final Rule inlineLink = new Rule('inlineLink', filterFn: (node) {
+  static final Rule inlineLink = Rule('inlineLink', filterFn: (node) {
     return getStyleOption('linkStyle') == 'inlined' &&
         node.nodeName == 'a' &&
         node.getAttribute('href') != null;
   }, replacement: (content, node) {
-    var href = node.getAttribute('href');
+    var href = node.getAttribute('href')!;
     var title = node.getAttribute('title') ?? '';
     return '[' + content + '](' + href + title + ')';
   });
 
-  static final Rule referenceLink = new Rule('referenceLink', filterFn: (node) {
+  static final Rule referenceLink = Rule('referenceLink', filterFn: (node) {
     return getStyleOption('linkStyle') == 'referenced' &&
         node.nodeName == 'a' &&
         node.getAttribute('href') != null;
@@ -245,16 +249,16 @@ abstract class _CommonRules {
     switch (getStyleOption('linkReferenceStyle')) {
       case 'collapsed':
         result = '[' + content + '][]';
-        reference = '[' + content + ']: ' + href + title;
+        reference = '[' + content + ']: ' + href! + title;
         break;
       case 'shortcut':
         result = '[' + content + ']';
-        reference = '[' + content + ']: ' + href + title;
+        reference = '[' + content + ']: ' + href! + title;
         break;
       default:
         var id = _linkReferences.length + 1;
         result = '[' + content + '][' + id.toString() + ']';
-        reference = '[' + id.toString() + ']: ' + href + title;
+        reference = '[' + id.toString() + ']: ' + href! + title;
     }
     _linkReferences.add(reference);
     return result;
@@ -268,37 +272,37 @@ abstract class _CommonRules {
   });
 
   static final Rule emphasis =
-      new Rule('emphasis', filters: ['em', 'i'], replacement: (content, node) {
-    if (content == null || content.trim().isEmpty) return '';
+      Rule('emphasis', filters: ['em', 'i'], replacement: (content, node) {
+    if (content.trim().isEmpty) return '';
     return getStyleOption('emDelimiter') +
         content +
         getStyleOption('emDelimiter');
   });
 
-  static final Rule strong = new Rule('strong', filters: ['strong', 'b'],
-      replacement: (content, node) {
-    if (content == null || content.trim().isEmpty) return '';
+  static final Rule strong =
+      Rule('strong', filters: ['strong', 'b'], replacement: (content, node) {
+    if (content.trim().isEmpty) return '';
     return getStyleOption('strongDelimiter') +
         content +
         getStyleOption('strongDelimiter');
   });
 
-  static final Rule code = new Rule('code', filterFn: (node) {
+  static final Rule code = Rule('code', filterFn: (node) {
     var isCodeBlock = node.nodeName == 'pre' && !node.hasSiblings;
     return node.nodeName == 'code' && !isCodeBlock;
   }, replacement: (content, node) {
-    if (content == null || content.trim().isEmpty) return '';
+    if (content.trim().isEmpty) return '';
 
     var delimiter = '`';
     var leadingSpace = '';
     var trailingSpace = '';
-    var matches = new RegExp(r'`+')
+    var matches = RegExp(r'`+')
         .allMatches(content)
         .map((match) => match.group(0))
         .toList();
-    if (matches != null && matches.isNotEmpty) {
-      if (new RegExp(r'^`').hasMatch(content)) leadingSpace = ' ';
-      if (new RegExp(r'`$').hasMatch(content)) trailingSpace = ' ';
+    if (matches.isNotEmpty) {
+      if (RegExp(r'^`').hasMatch(content)) leadingSpace = ' ';
+      if (RegExp(r'`$').hasMatch(content)) trailingSpace = ' ';
       while (matches.contains(delimiter)) {
         delimiter = delimiter + '`';
       }
@@ -307,7 +311,7 @@ abstract class _CommonRules {
   });
 
   static final Rule image =
-      new Rule('image', filters: ['img'], replacement: (content, node) {
+      Rule('image', filters: ['img'], replacement: (content, node) {
     var alt = node.getAttribute('alt') ?? '';
     var src = node.getAttribute('src') ?? '';
     var title = node.getAttribute('title') ?? '';
@@ -318,28 +322,28 @@ abstract class _CommonRules {
 
 abstract class _TableRules {
   static final Rule table =
-      new Rule('table', filters: ['table'], replacement: (content, node) {
+      Rule('table', filters: ['table'], replacement: (content, node) {
     return '\n$content\n';
   });
 
   static final Rule tr =
-      new Rule('tr', filters: ['tr'], replacement: (content, node) {
+      Rule('tr', filters: ['tr'], replacement: (content, node) {
     return '$content\n';
   });
 
-  static final Rule tHeadBody =
-      new Rule('tHeadBody', filters: ['thead', 'tbody'], replacement: (content, node) {
+  static final Rule tHeadBody = Rule('tHeadBody', filters: ['thead', 'tbody'],
+      replacement: (content, node) {
     return '$content';
   });
 
   static final Rule th =
-      new Rule('th', filters: ['th'], replacement: (content, node) {
+      Rule('th', filters: ['th'], replacement: (content, node) {
     var result = ' $content |';
     if (node.isParentFirstChild) {
       result = '| $content |';
     }
     if (node.isParentLastChild) {
-      var sb = new StringBuffer('|');
+      var sb = StringBuffer('|');
       for (var i = 0; i < node.siblingNum; i++) {
         sb.write(' ----- |');
       }
@@ -349,7 +353,7 @@ abstract class _TableRules {
   });
 
   static final Rule td =
-      new Rule('td', filters: ['td'], replacement: (content, node) {
+      Rule('td', filters: ['td'], replacement: (content, node) {
     var result = ' $content |';
     if (node.isParentFirstChild) {
       result = '| $content |';
