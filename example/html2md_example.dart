@@ -1,7 +1,7 @@
 import 'package:html2md/html2md.dart' as html2md;
 
-main() {
-  String html = '''<h1>HTML2MD Demo</h1>
+void main() {
+  var html = '''<h1>HTML2MD Demo</h1>
 
 <p>This demonstrates <a href="https://github.com/jarontai/html2md">html2md</a> – an HTML to Markdown converter in Dart.</p>
 

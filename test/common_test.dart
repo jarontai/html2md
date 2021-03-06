@@ -3,13 +3,13 @@ import 'package:test/test.dart';
 
 void main() {
   group('Common tests', () {
-    String rootHtml;
-    String imageHtml;
-    String html;
-    String optionsHtml;
-    String removeHtml;
-    String ignoreHtml;
-    String codeblockHtml;
+    late String rootHtml;
+    late String imageHtml;
+    late String html;
+    late String optionsHtml;
+    late String removeHtml;
+    late String ignoreHtml;
+    late String codeblockHtml;
 
     setUp(() {
       ignoreHtml =

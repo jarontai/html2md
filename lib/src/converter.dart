@@ -6,11 +6,11 @@ import 'options.dart' show updateStyleOptions;
 import 'rules.dart' show Rule;
 import 'utils.dart' as util;
 
-final Set<Rule> _appendRuleSet = new Set<Rule>();
+final Set<Rule> _appendRuleSet = <Rule>{};
 final Map<String, String> _customOptions = <String, String>{};
 
-final _leadingNewLinesRegExp = new RegExp(r'^\n*');
-final _trailingNewLinesRegExp = new RegExp(r'\n*$');
+final _leadingNewLinesRegExp = RegExp(r'^\n*');
+final _trailingNewLinesRegExp = RegExp(r'\n*$');
 
 /// Convert [html] to markdown text.
 ///
@@ -31,15 +31,15 @@ final _trailingNewLinesRegExp = new RegExp(r'\n*$');
 /// | strongDelimiter      | "**" | "**", "__" |
 /// | linkStyle      | "inlined" | "inlined", "referenced" |
 /// | linkReferenceStyle      | "full" | "full", "collapsed", "shortcut" |
-/// 
+///
 /// Elements list in [ignore] would be ingored.
 ///
 String convert(String html,
-    {String rootTag,
-    String imageBaseUrl,
-    Map<String, String> styleOptions,
-    List<String> ignore}) {
-  if (html == null || html.isEmpty) {
+    {String? rootTag,
+    String? imageBaseUrl,
+    Map<String, String>? styleOptions,
+    List<String>? ignore}) {
+  if (html.isEmpty) {
     return '';
   }
   if (imageBaseUrl != null && imageBaseUrl.isNotEmpty) {
@@ -49,44 +49,40 @@ String convert(String html,
   if (ignore != null && ignore.isNotEmpty) {
     Rule.addIgnore(ignore);
   }
-  var output = _process(new Node.root(html, rootTag: rootTag));
+  var output = _process(Node.root(html, rootTag: rootTag));
   return _postProcess(output);
 }
 
-_escape(String input) {
-  if (input == null) return null;
+String _escape(String input) {
   return input
-      .replaceAllMapped(new RegExp(r'\\(\S)'),
+      .replaceAllMapped(RegExp(r'\\(\S)'),
           (match) => '\\\\${match[1]}') // Escape backslash escapes!
-      .replaceAllMapped(new RegExp(r'^(#{1,6} )', multiLine: true),
+      .replaceAllMapped(RegExp(r'^(#{1,6} )', multiLine: true),
           (match) => '\\${match[1]}') // Escape headings
-      .replaceAllMapped(new RegExp(r'^([-*_] *){3,}$', multiLine: true),
-          (match) {
-        return match[0].split(match[1]).join('\\${match[1]}');
+      .replaceAllMapped(RegExp(r'^([-*_] *){3,}$', multiLine: true), (match) {
+        return match[0]!.split(match[1]!).join('\\${match[1]}');
       })
-      .replaceAllMapped(new RegExp(r'^(\W* {0,3})(\d+)\. ', multiLine: true),
+      .replaceAllMapped(RegExp(r'^(\W* {0,3})(\d+)\. ', multiLine: true),
           (match) => '${match[1]}${match[2]}\\. ')
-      .replaceAllMapped(new RegExp(r'^([^\\\w]*)[*+-] ', multiLine: true),
-          (match) {
-        return match[0].replaceAllMapped(
-            new RegExp(r'([*+-])'), (match) => '\\${match[1]}');
+      .replaceAllMapped(RegExp(r'^([^\\\w]*)[*+-] ', multiLine: true), (match) {
+        return match[0]!
+            .replaceAllMapped(RegExp(r'([*+-])'), (match) => '\\${match[1]}');
       })
-      .replaceAllMapped(
-          new RegExp(r'^(\W* {0,3})> '), (match) => '${match[1]}\\> ')
-      .replaceAllMapped(new RegExp(r'\*+(?![*\s\W]).+?\*+'),
-          (match) => match[0].replaceAll(new RegExp(r'\*'), '\\*'))
-      .replaceAllMapped(new RegExp(r'_+(?![_\s\W]).+?_+'),
-          (match) => match[0].replaceAll(new RegExp(r'_'), '\\_'))
-      .replaceAllMapped(new RegExp(r'`+(?![`\s\W]).+?`+'),
-          (match) => match[0].replaceAll(new RegExp(r'`'), '\\`'))
-      .replaceAllMapped(new RegExp(r'[\[\]]'), (match) => '\\${match[0]}');
+      .replaceAllMapped(RegExp(r'^(\W* {0,3})> '), (match) => '${match[1]}\\> ')
+      .replaceAllMapped(RegExp(r'\*+(?![*\s\W]).+?\*+'),
+          (match) => match[0]!.replaceAll(RegExp(r'\*'), '\\*'))
+      .replaceAllMapped(RegExp(r'_+(?![_\s\W]).+?_+'),
+          (match) => match[0]!.replaceAll(RegExp(r'_'), '\\_'))
+      .replaceAllMapped(RegExp(r'`+(?![`\s\W]).+?`+'),
+          (match) => match[0]!.replaceAll(RegExp(r'`'), '\\`'))
+      .replaceAllMapped(RegExp(r'[\[\]]'), (match) => '\\${match[0]}');
 }
 
 Map<String, String> _getFlankingWhitespace(Node node) {
-  Map<String, String> result = {};
+  var result = <String, String>{};
   if (!node.isBlock) {
-    var hasLeading = new RegExp(r'^[ \r\n\t]').hasMatch(node.textContent);
-    var hasTrailing = new RegExp(r'[ \r\n\t]$').hasMatch(node.textContent);
+    var hasLeading = RegExp(r'^[ \r\n\t]').hasMatch(node.textContent);
+    var hasTrailing = RegExp(r'[ \r\n\t]$').hasMatch(node.textContent);
 
     if (hasLeading && !_isFlankedByWhitespace(node, 'left')) {
       result['leading'] = ' ';
@@ -99,16 +95,16 @@ Map<String, String> _getFlankingWhitespace(Node node) {
 }
 
 bool _isFlankedByWhitespace(Node node, String side) {
-  dom.Node sibling;
+  dom.Node? sibling;
   RegExp regExp;
-  bool isFlanked = false;
+  var isFlanked = false;
 
   if (side == 'left') {
-    sibling = util.previousSibling(node.node);
-    regExp = new RegExp(r' $');
+    sibling = util.previousSibling(node.node!);
+    regExp = RegExp(r' $');
   } else {
-    sibling = util.nextSibling(node.node);
-    regExp = new RegExp(r'^ ');
+    sibling = util.nextSibling(node.node!);
+    regExp = RegExp(r'^ ');
   }
 
   if (sibling != null) {
@@ -121,7 +117,7 @@ bool _isFlankedByWhitespace(Node node, String side) {
   return isFlanked;
 }
 
-_join(String string1, String string2) {
+String _join(String string1, String string2) {
   var separator = _separatingNewlines(string1, string2);
   // // Remove trailing/leading newlines and replace with separator
   string1 = string1.replaceAll(_trailingNewLinesRegExp, '');
@@ -131,18 +127,18 @@ _join(String string1, String string2) {
 
 String _postProcess(String input) {
   _appendRuleSet.forEach((rule) {
-    input = _join(input, rule.append());
+    input = _join(input, rule.append!());
   });
 
-  if (input != null && input.isNotEmpty) {
+  if (input.isNotEmpty) {
     return input
-        .replaceAll(new RegExp(r'^[\t\r\n]+'), '')
-        .replaceAll(new RegExp(r'[\t\r\n\s]+$'), '');
+        .replaceAll(RegExp(r'^[\t\r\n]+'), '')
+        .replaceAll(RegExp(r'[\t\r\n\s]+$'), '');
   }
   return '';
 }
 
-// Determines the new lines between the current output and the replacement
+// Determines the lines between the current output and the replacement
 String _process(Node inNode) {
   var result = '';
   for (var node in inNode.childNodes()) {
@@ -155,14 +151,14 @@ String _process(Node inNode) {
       // Element
       replacement = _replacementForNode(node);
     }
-    result = _join(result, replacement ?? '');
+    result = _join(result, replacement);
   }
   return result;
 }
 
 String _replacementForNode(Node node) {
   var rule = Rule.findRule(node);
-  if (rule != null && rule.append != null) {
+  if (rule.append != null) {
     _appendRuleSet.add(rule);
   }
   var content = _process(node);
@@ -170,16 +166,16 @@ String _replacementForNode(Node node) {
   if (whitespace['leading'] != null || whitespace['trailing'] != null) {
     content = content.trim();
   }
-  var replacement = rule.replacement(content, node);
+  var replacement = rule.replacement!(content, node);
   if (rule.name == 'image') {
     var imageSrc = node.getAttribute('src');
     var imageBaseUrl = _customOptions['imageBaseUrl'];
     if (imageSrc != null && imageBaseUrl != null) {
       var newSrc = path.join(imageBaseUrl, imageSrc);
-      replacement = replacement.replaceAll(new RegExp(imageSrc), newSrc);
+      replacement = replacement.replaceAll(RegExp(imageSrc), newSrc);
     }
   }
-  return '${whitespace['leading'] ?? ''}${replacement}${whitespace['trailing'] ?? ''}';
+  return '${whitespace['leading'] ?? ''}$replacement${whitespace['trailing'] ?? ''}';
 }
 
 String _separatingNewlines(String output, String replacement) {
@@ -187,8 +183,8 @@ String _separatingNewlines(String output, String replacement) {
     _trailingNewLinesRegExp.stringMatch(output),
     _leadingNewLinesRegExp.stringMatch(replacement),
   ];
-  newlines.sort((a, b) => a.compareTo(b));
+  newlines.sort((a, b) => a!.compareTo(b!));
 
-  var maxNewlines = newlines.last;
+  var maxNewlines = newlines.last!;
   return maxNewlines.length < 2 ? maxNewlines : '\n\n';
 }
