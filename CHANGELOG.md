@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.0
+- Support null safety
+
 ## 0.5.1
 - Fix the replacement of thead and tbody
 
