@@ -10,6 +10,7 @@ void main() {
     late String removeHtml;
     late String ignoreHtml;
     late String codeblockHtml;
+    late String linkWithTitleHtml;
 
     setUp(() {
       ignoreHtml =
@@ -48,6 +49,8 @@ void main() {
 <pre>defaultConfig{<br>...<br>minSdkVersion 15<br>...<br>}</pre>
 ''';
       codeblockHtml = '''<pre><code>print('Hello, world');</code></pre>''';
+      linkWithTitleHtml =
+          '<a href="https://example.com" title="Example title">Example content</a>';
     });
 
     test('Basic Test', () {
@@ -121,6 +124,27 @@ minSdkVersion 15
           '''```
 print('Hello, world');
 ```''');
+    });
+
+    test('Link with title Test', () {
+      expect(
+        html2md.convert(linkWithTitleHtml),
+        '[Example content](https://example.com "Example title")',
+      );
+    });
+
+    test('Referenced Link with title Test', () {
+      expect(
+        html2md.convert(
+          linkWithTitleHtml,
+          styleOptions: {
+            'linkStyle': 'referenced',
+          },
+        ),
+        '''[Example content][1]
+
+[1]: https://example.com "Example title"''',
+      );
     });
   });
 }
