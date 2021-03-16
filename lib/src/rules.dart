@@ -235,7 +235,8 @@ abstract class _CommonRules {
   }, replacement: (content, node) {
     var href = node.getAttribute('href')!;
     var title = node.getAttribute('title') ?? '';
-    return '[' + content + '](' + href + title + ')';
+    var renderedTitle = title.isEmpty ? title : ' "$title"';
+    return '[' + content + '](' + href + renderedTitle + ')';
   });
 
   static final Rule referenceLink = Rule('referenceLink', filterFn: (node) {
@@ -245,20 +246,21 @@ abstract class _CommonRules {
   }, replacement: (content, node) {
     var href = node.getAttribute('href');
     var title = node.getAttribute('title') ?? '';
+    var renderedTitle = title.isEmpty ? title : ' "$title"';
     var result, reference;
     switch (getStyleOption('linkReferenceStyle')) {
       case 'collapsed':
         result = '[' + content + '][]';
-        reference = '[' + content + ']: ' + href! + title;
+        reference = '[' + content + ']: ' + href! + renderedTitle;
         break;
       case 'shortcut':
         result = '[' + content + ']';
-        reference = '[' + content + ']: ' + href! + title;
+        reference = '[' + content + ']: ' + href! + renderedTitle;
         break;
       default:
         var id = _linkReferences.length + 1;
         result = '[' + content + '][' + id.toString() + ']';
-        reference = '[' + id.toString() + ']: ' + href! + title;
+        reference = '[' + id.toString() + ']: ' + href! + renderedTitle;
     }
     _linkReferences.add(reference);
     return result;
