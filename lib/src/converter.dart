@@ -1,5 +1,4 @@
 import 'package:html/dom.dart' as dom;
-import 'package:path/path.dart' as path;
 
 import 'node.dart';
 import 'options.dart' show updateStyleOptions;
@@ -171,7 +170,12 @@ String _replacementForNode(Node node) {
     var imageSrc = node.getAttribute('src');
     var imageBaseUrl = _customOptions['imageBaseUrl'];
     if (imageSrc != null && imageBaseUrl != null) {
-      var newSrc = path.join(imageBaseUrl, imageSrc);
+      var newSrc;
+      if (imageBaseUrl.endsWith('/') || imageSrc.startsWith('/')) {
+        newSrc = imageBaseUrl + imageSrc;
+      } else {
+        newSrc = imageBaseUrl + '/' + imageSrc;
+      }
       replacement = replacement.replaceAll(RegExp(imageSrc), newSrc);
     }
   }
