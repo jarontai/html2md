@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1
+- Fix link rules properly converting titles
+- Fix image src in windows system
+
 ## 1.0.0
 - Support null safety
 
