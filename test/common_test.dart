@@ -11,6 +11,7 @@ void main() {
     late String ignoreHtml;
     late String codeblockHtml;
     late String linkWithTitleHtml;
+    late String strikeHtml;
 
     setUp(() {
       ignoreHtml =
@@ -51,6 +52,8 @@ void main() {
       codeblockHtml = '''<pre><code>print('Hello, world');</code></pre>''';
       linkWithTitleHtml =
           '<a href="https://example.com" title="Example title">Example content</a>';
+      strikeHtml =
+          '<strike>This is strike.</strike><s>This is s.</s><del>This is del.</del> Normal Text.';
     });
 
     test('Basic Test', () {
@@ -144,6 +147,13 @@ print('Hello, world');
         '''[Example content][1]
 
 [1]: https://example.com "Example title"''',
+      );
+    });
+
+    test('Strike Test', () {
+      expect(
+        html2md.convert(strikeHtml),
+        '~~This is strike.~~~~This is s.~~~~This is del.~~ Normal Text.',
       );
     });
   });
