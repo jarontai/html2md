@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.0
+- Add support for strike elements
+
 ## 1.0.1
 - Fix link rules properly converting titles
 - Fix image src in windows system
