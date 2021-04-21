@@ -18,6 +18,7 @@ final _commonMarkRules = [
   _CommonRules.referenceLink,
   _CommonRules.emphasis,
   _CommonRules.strong,
+  _CommonRules.strike,
   _CommonRules.code,
   _CommonRules.image,
   _TableRules.table,
@@ -287,6 +288,12 @@ abstract class _CommonRules {
     return getStyleOption('strongDelimiter') +
         content +
         getStyleOption('strongDelimiter');
+  });
+
+  static final Rule strike = Rule('strike', filters: ['strike', 's', 'del'],
+      replacement: (content, node) {
+    if (content.trim().isEmpty) return '';
+    return '~~' + content + '~~';
   });
 
   static final Rule code = Rule('code', filterFn: (node) {
