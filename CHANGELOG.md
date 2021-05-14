@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.1
+- Fix custom rule exports
+
 ## 1.2.0
 - Add custom rules
 
