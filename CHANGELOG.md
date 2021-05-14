@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.0
+- Add custom rules
+
 ## 1.1.0
 - Add support for strike elements
 
