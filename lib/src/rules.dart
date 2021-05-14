@@ -43,6 +43,7 @@ class Rule {
   final Replacement? replacement;
   final Append? append;
   final FilterFn? _realFilterFn;
+  static final List<Rule> _customRules = [];
 
   Rule(this.name, {this.filters, this.filterFn, this.replacement, this.append})
       : _realFilterFn = _buildFilterFn(filters, filterFn);
@@ -70,10 +71,16 @@ class Rule {
     }
   }
 
-  static Rule findRule(Node node, [List<Rule>? customRules]) {
-    if (customRules != null) {
+  static void addRules(List<Rule> rules) {
+    if (rules.isNotEmpty) {
+      _customRules.addAll(rules);
+    }
+  }
+
+  static Rule findRule(Node node) {
+    if (_customRules.isNotEmpty) {
       var customRule =
-          customRules.firstWhereOrNull((rule) => rule._check(node));
+          _customRules.firstWhereOrNull((rule) => rule._check(node));
       if (customRule != null) return customRule;
     }
 

@@ -33,11 +33,16 @@ final _trailingNewLinesRegExp = RegExp(r'\n*$');
 ///
 /// Elements list in [ignore] would be ingored.
 ///
-String convert(String html,
-    {String? rootTag,
-    String? imageBaseUrl,
-    Map<String, String>? styleOptions,
-    List<String>? ignore}) {
+/// The [rules] parameter can be used to customize element processing.
+///
+String convert(
+  String html, {
+  String? rootTag,
+  String? imageBaseUrl,
+  Map<String, String>? styleOptions,
+  List<String>? ignore,
+  List<Rule>? rules,
+}) {
   if (html.isEmpty) {
     return '';
   }
@@ -47,6 +52,9 @@ String convert(String html,
   updateStyleOptions(styleOptions);
   if (ignore != null && ignore.isNotEmpty) {
     Rule.addIgnore(ignore);
+  }
+  if (rules != null && rules.isNotEmpty) {
+    Rule.addRules(rules);
   }
   var output = _process(Node.root(html, rootTag: rootTag));
   return _postProcess(output);

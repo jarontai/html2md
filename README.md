@@ -8,19 +8,25 @@ Convert html to markdown in Dart. A simplify version of node's [turndown](https:
 
 A simple usage example:
 
-    import 'package:html2md/html2md.dart' as html2md;
+~~~dart
+import 'package:html2md/html2md.dart' as html2md;
 
-    main() {
-      var html = '<h1>HTML2MD Demo</h1>';
-      print(html2md.convert(html));
-    }
+main() {
+    var html = '<h1>HTML2MD Demo</h1>';
+    print(html2md.convert(html));
+}
+~~~
 
 ## Config
 
-You can config convert style by passing `styleOptions` to `convert`, elements that should be ignored also can be set with `ignore`:
+You can config convert style by passing `styleOptions` to `convert`, elements that should be ignored also can be set with `ignore`. If you want to customize element replacing, use the custom [rules](#custom-rules)!
 
-    html2md.convert(html, styleOptions: { 'headingStyle': 'atx' }, ignore: ['script']);
-
+~~~dart
+html2md.convert(html,
+    styleOptions: {'headingStyle': 'atx'},
+    ignore: ['script'],
+    rules: [Rule('custom')]);
+~~~
 
 The default and available style options:
 
@@ -71,9 +77,51 @@ The converted markdown table:
 | Content Cell  | Content Cell  |
 | Content Cell  | Content Cell  |
 
+## Custom Rules
+
+Want to customize element converting? Write your rules!
+
+Rule fields explaination
+
+~~~dart
+final String name; // unique name
+final List<String>? filters; // simple element name filters, e.g. ['aside']
+final FilterFn? filterFn; // function for building complex element filter logic
+final Replacement? replacement; // function for doing the replacing
+final Append? append; // function for appending content
+~~~
+
+Rule example - Convert onebox(aside) element in [Discourse](https://www.discourse.org/) post to a link
+
+~~~dart
+Rule(
+  'aside-onebox',
+  filterFn: (node) {
+    // Find aside with onebox class
+    if (node.nodeName == 'aside' &&
+        node.className.contains('onebox')) {
+        return true;
+    }
+    return false;
+  },
+  replacement: (content, node) {
+    // Find the link under header
+    var header = node.firstChild;
+    var link = header!
+        .childNodes()
+        .firstWhere((element) => element.nodeName == 'a');
+    var href = link.getAttribute('href');
+    if (href != null && href.isNotEmpty) {
+      return '[$href]($href)';
+    }
+    return '';
+  },
+)
+~~~
+
 ## Test
 
-    pub run test
+    dart run test
 
 ## Features and bugs
 
