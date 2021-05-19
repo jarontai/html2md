@@ -19,7 +19,7 @@ main() {
 
 ## Config
 
-You can config convert style by passing `styleOptions` to `convert`, elements that should be ignored also can be set with `ignore`. If you want to customize element replacing, use the custom [rules](#custom-rules)!
+You can config convert style by passing `styleOptions` to `convert`, elements that should be ignored also can be set with `ignore`. If you want to customize element converting, use custom [rules](#custom-rules)!
 
 ~~~dart
 html2md.convert(html,
@@ -84,18 +84,27 @@ Want to customize element converting? Write your rules!
 Rule fields explaination
 
 ~~~dart
-final String name; // unique name
+final String name; // unique rule name
 final List<String>? filters; // simple element name filters, e.g. ['aside']
 final FilterFn? filterFn; // function for building complex element filter logic
 final Replacement? replacement; // function for doing the replacing
 final Append? append; // function for appending content
 ~~~
 
-Rule example - Convert onebox(aside) element in [Discourse](https://www.discourse.org/) post to a link
+Rule example - Convert the onebox section of [discourse](https://www.discourse.org/) post to a link
+
+~~~html
+<aside class="onebox">
+  <header class="source">
+      <img src="https://discoursesite/uploads/default/original/1X/test.png" class="site-icon" width="32" height="32">
+      <a href="https://events.google.com/io/program/content?4=topic_flutter&amp;lng=zh-CN" target="_blank" rel="noopener">Google I/O 2021</a>
+  </header>
+</aside>
+~~~
 
 ~~~dart
 Rule(
-  'aside-onebox',
+  'discourse-onebox',
   filterFn: (node) {
     // Find aside with onebox class
     if (node.nodeName == 'aside' &&
@@ -105,14 +114,14 @@ Rule(
     return false;
   },
   replacement: (content, node) {
-    // Find the link under header
+    // find the first a element under header
     var header = node.firstChild;
     var link = header!
         .childNodes()
         .firstWhere((element) => element.nodeName == 'a');
     var href = link.getAttribute('href');
     if (href != null && href.isNotEmpty) {
-      return '[$href]($href)';
+      return '[$href]($href)'; // build the link
     }
     return '';
   },
