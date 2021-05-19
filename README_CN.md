@@ -1,14 +1,14 @@
-English | [简体中文](./README_CN.md)
+简体中文 | [English](./README.md)
 
 # html2md
 
 [![Build status](https://travis-ci.org/jarontai/html2md.svg)](https://travis-ci.org/jarontai/html2md)
 
-Convert html to markdown in Dart. A simplify version of node's [turndown](https://github.com/domchristie/turndown).
+将html代码转换为markdown格式的Dart库。
 
-## Usage
+## 使用
 
-A simple usage example:
+简单示例:
 
 ~~~dart
 import 'package:html2md/html2md.dart' as html2md;
@@ -19,23 +19,23 @@ main() {
 }
 ~~~
 
-In flutter, you can use the [flutter_markdown](https://pub.dev/packages/flutter_markdown) for rendering:
+在flutter中, 可以使用[flutter_markdown](https://pub.dev/packages/flutter_markdown)来渲染:
 
 ~~~dart
 import 'package:html2md/html2md.dart' as html2md;
 import 'package:flutter_markdown/flutter_markdown.dart';
 
 build(BuildContext context) {
-    // Caution: This is not best practice, you should not call convert in build and the converted markdown should put in state.
+    // 注意: 以下并非最佳实践，convert不应该在build中调用，转换后的markdown也应该放到state中
     var html = '<h1>HTML2MD Demo</h1>';
     var markdown = html2md.convert(html);
     return Markdown(data: markdown);
 }
 ~~~
 
-## Config
+## 配置
 
-You can config convert style by passing `styleOptions` to `convert`, elements that should be ignored also can be set with `ignore`. If you want to customize element converting, use custom [rules](#custom-rules)!
+通过`styleOptions`定义转换格式, 通过`ignore`忽略不需要转换的元素. 如果需要自定义转换规则，请编写[rules](#custom-rules)!
 
 ~~~dart
 html2md.convert(html,
@@ -44,9 +44,9 @@ html2md.convert(html,
     rules: [Rule('custom')]);
 ~~~
 
-The default and available style options:
+默认的转换格式:
 
-| Name        | Default           | Options  |
+| 名称        | 默认值           | 选项  |
 | ------------- |:-------------:| -----:|
 | headingStyle      | "setext" | "setext", "atx" |
 | hr      | "* * *" | "* * *", "- - -", "_ _ _" |
@@ -58,11 +58,11 @@ The default and available style options:
 | linkStyle      | "inlined" | "inlined", "referenced" |
 | linkReferenceStyle      | "full" | "full", "collapsed", "shortcut" |
 
-## Table support
+## Table 支持
 
-Basic table converting is supported! 
+简单的Table（表格）是支持的! 
 
-Html table source:
+Table的html代码:
 
     <table>
         <tr>
@@ -79,35 +79,35 @@ Html table source:
         </tr>
     </table>
 
-The converted markdown source:
+转换后的markdown:
 
     | First Header  | Second Header |
     | ----- | ----- |
     | Content Cell  | Content Cell  |
     | Content Cell  | Content Cell  |
 
-The converted markdown table:
+转换后的markdown渲染效果:
 
 | First Header  | Second Header |
 | ----- | ----- |
 | Content Cell  | Content Cell  |
 | Content Cell  | Content Cell  |
 
-## Custom Rules
+## 自定义 Rules
 
-Want to customize element converting? Write your rules!
+需要自定义转换规则? 编写你自己的Rule!
 
-Rule fields explaination
+Rule字段解释：
 
 ~~~dart
-final String name; // unique rule name
-final List<String>? filters; // simple element name filters, e.g. ['aside']
-final FilterFn? filterFn; // function for building complex element filter logic
-final Replacement? replacement; // function for doing the replacing
-final Append? append; // function for appending content
+final String name; // 唯一名称
+final List<String>? filters; // 简单的元素名称过滤，比如：['aside']
+final FilterFn? filterFn; // 也可以编写函数来实现复杂的过滤规则
+final Replacement? replacement; // 执行内容替换的函数
+final Append? append; // 执行追加内容的函数
 ~~~
 
-Rule example - Convert the onebox section of [discourse](https://www.discourse.org/) post to a link
+Rule示例 - 转换 [discourse](https://www.discourse.org/) 帖子中的onebox块
 
 ~~~html
 <aside class="onebox">
@@ -144,11 +144,11 @@ Rule(
 )
 ~~~
 
-## Test
+## 测试
 
     dart run test
 
-## Features and bugs
+## bug提交
 
 Please file feature requests and bugs at the [issue tracker][tracker].
 
