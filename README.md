@@ -17,7 +17,7 @@ main() {
 }
 ~~~
 
-Usage caution: html2md is not a flutter widget. You should should convert html to markdown first then send it to the [flutter_markdown](https://pub.dev/packages/flutter_markdown) widget.
+Flutter usage caution: html2md is not a flutter widget! You should convert html to markdown first then send it to [flutter_markdown](https://pub.dev/packages/flutter_markdown) widget.
 
 ## Config
 
