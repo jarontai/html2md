@@ -3,6 +3,7 @@ import 'package:html/parser.dart' show parse;
 
 import 'utils.dart' as util;
 
+/// Wrapper class for html node.
 class Node {
   dom.Node? _node;
   dom.Element? _el;

@@ -30,18 +30,19 @@ final _commonMarkRules = [
 
 final List<String> _linkReferences = [];
 
-typedef Append = String Function();
+typedef AppendFn = String Function();
 
 typedef FilterFn = bool Function(Node node);
 
-typedef Replacement = String Function(String content, Node node);
+typedef ReplacementFn = String Function(String content, Node node);
 
+/// A rule defining the element filtering, replacement and appending action.
 class Rule {
   final String name;
   final List<String>? filters;
   final FilterFn? filterFn;
-  final Replacement? replacement;
-  final Append? append;
+  final ReplacementFn? replacement;
+  final AppendFn? append;
   final FilterFn? _realFilterFn;
   static final List<Rule> _customRules = [];
 

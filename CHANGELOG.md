@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.2
+- Minor renaming and doc updates
+
 ## 1.2.1
 - Fix custom rule exports
 
