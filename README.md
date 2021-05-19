@@ -17,6 +17,8 @@ main() {
 }
 ~~~
 
+Usage caution: html2md is not a flutter widget. You should should convert html to markdown first then send it to the [flutter_markdown](https://pub.dev/packages/flutter_markdown) widget.
+
 ## Config
 
 You can config convert style by passing `styleOptions` to `convert`, elements that should be ignored also can be set with `ignore`. If you want to customize element converting, use custom [rules](#custom-rules)!
