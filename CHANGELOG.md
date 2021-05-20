@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.3
+- Doc updates
+
 ## 1.2.2
 - Minor renaming and doc updates
 

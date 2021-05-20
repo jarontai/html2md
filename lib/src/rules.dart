@@ -38,11 +38,21 @@ typedef ReplacementFn = String Function(String content, Node node);
 
 /// A rule defining the element filtering, replacement and appending action.
 class Rule {
+  /// Unique rule name.
   final String name;
+
+  /// A list of element names which should be selected, e.g. ['aside']
   final List<String>? filters;
+
+  /// Function for building complex element filter logic.
   final FilterFn? filterFn;
+
+  /// Function for doing the content replacing logic.
   final ReplacementFn? replacement;
+
+  /// Function for appending content.
   final AppendFn? append;
+
   final FilterFn? _realFilterFn;
   static final List<Rule> _customRules = [];
 
