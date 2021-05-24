@@ -30,10 +30,13 @@ final _commonMarkRules = [
 
 final List<String> _linkReferences = [];
 
+/// Fuction for appending, the returned string will append to the converted content
 typedef AppendFn = String Function();
 
+/// Fuction for filtering your targeting node
 typedef FilterFn = bool Function(Node node);
 
+/// Fuction for doing transform/replacement to the converted content
 typedef ReplacementFn = String Function(String content, Node node);
 
 /// A rule defining the element filtering, replacement and appending action.
