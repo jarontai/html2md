@@ -4,7 +4,7 @@
 
 [![Build status](https://travis-ci.org/jarontai/html2md.svg)](https://travis-ci.org/jarontai/html2md)
 
-将html代码转换为markdown格式的Dart库。
+将html转换为markdown的Dart库，支持CommonMark、简单表格以及自定义转换规则。
 
 ## 使用
 
@@ -148,11 +148,15 @@ Rule(
 
     dart run test
 
-## bug提交
+## Bug
 
-Please file feature requests and bugs at the [issue tracker][tracker].
+请将bug发送到 [issue tracker][tracker].
 
 [tracker]: https://github.com/jarontai/html2md/issues
+
+## 感谢
+
+html2md的基础实现参考了Nodejs库 [turndown](https://github.com/domchristie/turndown)
 
 ## License
 Created from templates made available by Stagehand under a BSD-style

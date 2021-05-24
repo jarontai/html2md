@@ -4,7 +4,7 @@ English | [简体中文](./README_CN.md)
 
 [![Build status](https://travis-ci.org/jarontai/html2md.svg)](https://travis-ci.org/jarontai/html2md)
 
-Convert html to markdown in Dart. A simplify version of node's [turndown](https://github.com/domchristie/turndown).
+A library for converting HTML to Markdown in Dart. It supports CommonMark, simple table and custom converting rules.
 
 ## Usage
 
@@ -153,6 +153,10 @@ Rule(
 Please file feature requests and bugs at the [issue tracker][tracker].
 
 [tracker]: https://github.com/jarontai/html2md/issues
+
+## Inspiration
+
+html2md is basicly a simplify version of Node's [turndown](https://github.com/domchristie/turndown)
 
 ## License
 Created from templates made available by Stagehand under a BSD-style
