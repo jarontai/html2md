@@ -26,7 +26,9 @@ import 'package:html2md/html2md.dart' as html2md;
 import 'package:flutter_markdown/flutter_markdown.dart';
 
 build(BuildContext context) {
-    // Caution: This is not best practice, you should not call convert in build and the converted markdown should put in state.
+    // Caution!
+    // This is not best practice, you should not call convert in build
+    // and the converted markdown should put in state.
     var html = '<h1>HTML2MD Demo</h1>';
     var markdown = html2md.convert(html);
     return Markdown(data: markdown);
