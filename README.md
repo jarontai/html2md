@@ -2,6 +2,7 @@ English | [简体中文](./README_CN.md)
 
 # html2md
 
+[![Pub](https://img.shields.io/pub/v/html2md.svg)](https://pub.dev/packages/html2md)
 [![Build status](https://travis-ci.org/jarontai/html2md.svg)](https://travis-ci.org/jarontai/html2md)
 
 A library for converting HTML to Markdown in Dart. It supports CommonMark, simple table and custom converting rules.
