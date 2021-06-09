@@ -126,7 +126,6 @@ String repeat(String content, int times) {
   return List.filled(times, content).join();
 }
 
-// removes extraneous whitespace from the given element.
 dom.Element? _asElement(dom.Node? node) {
   if (node is! dom.Element) {
     return null;

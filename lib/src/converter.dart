@@ -126,7 +126,7 @@ bool _isFlankedByWhitespace(Node node, String side) {
 
 String _join(String string1, String string2) {
   var separator = _separatingNewlines(string1, string2);
-  // // Remove trailing/leading newlines and replace with separator
+  // Remove trailing/leading newlines and replace with separator
   string1 = string1.replaceAll(_trailingNewLinesRegExp, '');
   string2 = string2.replaceAll(_leadingNewLinesRegExp, '');
   return '$string1$separator$string2';
@@ -145,7 +145,6 @@ String _postProcess(String input) {
   return '';
 }
 
-// Determines the lines between the current output and the replacement
 String _process(Node inNode) {
   var result = '';
   for (var node in inNode.childNodes()) {
