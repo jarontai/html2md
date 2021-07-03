@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.5
+- Export html2md's Node class
+- New custom rule test
+
 ## 1.2.4
 - Doc updates
 
