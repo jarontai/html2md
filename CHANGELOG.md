@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.6
+- Enhance table rules (adapted from guyplusplus/turndown-plugin-gfm)
+
 ## 1.2.5
 - Export html2md's Node class
 - New custom rule test

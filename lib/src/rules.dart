@@ -21,11 +21,11 @@ final _commonMarkRules = [
   _CommonRules.strike,
   _CommonRules.code,
   _CommonRules.image,
+  _TableRules.tableCell,
+  _TableRules.tableRow,
   _TableRules.table,
-  _TableRules.tHeadBody,
-  _TableRules.th,
-  _TableRules.tr,
-  _TableRules.td,
+  _TableRules.tableSection,
+  _TableRules.captionSection,
 ];
 
 final List<String> _linkReferences = [];
@@ -98,7 +98,6 @@ class Rule {
       if (customRule != null) return customRule;
     }
 
-    if (node.isBlank) return _BaseRules.blankRule;
     return _commonMarkRules.firstWhere((rule) => rule._check(node),
         orElse: () => _BaseRules.defaultRule);
   }
@@ -113,14 +112,11 @@ class Rule {
 }
 
 abstract class _BaseRules {
-  static final Rule blankRule =
-      Rule('blank', filters: ['blank'], replacement: (content, node) {
-    return node.isBlock ? '\n\n' : '';
-  });
-
   static final Rule defaultRule =
       Rule('default', filters: ['default'], replacement: (content, node) {
-    return node.isBlock ? '\n\n' + content + '\n\n' : content;
+    return content.isEmpty
+      ? node.isBlock ? '\n\n' : ''
+      : node.isBlock ? '\n\n' + content + '\n\n' : content;
   });
 
   static Rule buildIgnoreRule(List<String> names) {
@@ -350,44 +346,86 @@ abstract class _CommonRules {
   });
 }
 
+/// turndown-plugin-gfm
+/// MIT License
+/// Copyright (c) 2017+ Dom Christie, guyplusplus
 abstract class _TableRules {
-  static final Rule table =
-      Rule('table', filters: ['table'], replacement: (content, node) {
-    return '\n$content\n';
-  });
+  static final Rule tableCell = Rule('tableCell',
+    filters: ['th', 'td'],
+    replacement: (content, node) => cell(content, node) + spannedCells(node, ''));
 
-  static final Rule tr =
-      Rule('tr', filters: ['tr'], replacement: (content, node) {
-    return '$content\n';
-  });
+  static final Rule tableRow = Rule('tableRow',
+    filters: ['tr'],
+    replacement: (content, node) {
+      var borderCells = '';
+      final alignMap = { 'left': ':--', 'right': '--:', 'center': ':-:' };
 
-  static final Rule tHeadBody = Rule('tHeadBody', filters: ['thead', 'tbody'],
-      replacement: (content, node) {
-    return '$content';
-  });
+      if (isHeadingRow(node)) {
+        for (var child in node.childNodes()) {
+          var border = '---';
+          var align = (child.getAttribute('align') ?? '').toLowerCase();
 
-  static final Rule th =
-      Rule('th', filters: ['th'], replacement: (content, node) {
-    var result = ' $content |';
-    if (node.isParentFirstChild) {
-      result = '| $content |';
-    }
-    if (node.isParentLastChild) {
-      var sb = StringBuffer('|');
-      for (var i = 0; i < node.siblingNum; i++) {
-        sb.write(' ----- |');
+          if (align.isNotEmpty) border = alignMap[align] ?? border;
+          borderCells += cell(border, child) + spannedCells(child, border);
+        }
       }
-      result = '$result\n${sb.toString()}';
-    }
-    return result;
-  });
+      return '\n$content' + (borderCells.isNotEmpty ? '\n$borderCells' : '');
+    });
 
-  static final Rule td =
-      Rule('td', filters: ['td'], replacement: (content, node) {
-    var result = ' $content |';
-    if (node.isParentFirstChild) {
-      result = '| $content |';
+  static final Rule table = Rule('table',
+    filters: ['table'],
+    replacement: (content, node) {
+      if (isNestedTable(node)) return '  ${node.outerHTML}  ';
+      // Ensure there are no blank lines
+      content = content.replaceAll('\n\n', '\n');
+      return '\n\n$content\n\n';
+    });
+
+  static final Rule tableSection = Rule('tableSection',
+    filters: ['thead', 'tbody', 'tfoot'],
+    replacement: (content, node) => content);
+
+  static final Rule captionSection = Rule('captionSection',
+    filters: ['caption'],
+    replacement: (content, node) {
+      if (node.parentElName == 'table' && node.isParentFirstChild) return content;
+      return '';
+    });
+
+  static bool isHeadingRow(Node tr) {
+    final parentNode = tr.parentElName;
+    var tableNode = tr.asElement()?.parent;
+    if (parentNode == 'thead' || parentNode == 'tfoot' || parentNode == 'tbody') {
+      tableNode = tableNode?.parent;
     }
-    return result;
-  });
+    return tableNode?.localName == 'table' && tableNode?.querySelector('tr:first-child') == tr.asElement();
+    // TODO: not perfect, but works for now
+  }
+
+  static String cell(String content, Node node) {
+    final index = node.parentChildIndex;
+    var prefix = ' ';
+    if (index == 0) prefix = '| ';
+    // Ensure single line per cell (both windows and unix EoL)
+    // TODO: allow gfm non-strict mode to replace new lines by `<br/>`
+    content = content.replaceAll('\r\n', '\n').replaceAll('\n', ' ');
+    // | must be escaped as \|
+    content = content.replaceAll('|', '\\|');
+    return '$prefix$content |';
+  }
+
+  static String spannedCells(Node node, String spannedCellContent) {
+    final colspan = int.tryParse(node.getAttribute('colspan') ?? '') ?? 1;
+    if (colspan <= 1) return '';
+    return ' $spannedCellContent |' * (colspan - 1);
+  }
+
+  static bool isNestedTable(Node tableNode) {
+    var currentNode = tableNode.asElement()?.parent;
+    while (currentNode != null) {
+      if (currentNode.localName == 'table') return true;
+      currentNode = currentNode.parent;
+    }
+    return false;
+  }
 }
