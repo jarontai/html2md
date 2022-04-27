@@ -2,7 +2,6 @@ name: html2md
 description: A library for converting HTML to Markdown. It supports CommonMark, simple table and custom converting rules.
 version: 1.2.6
 homepage: https://github.com/jarontai/html2md
-publish_to: https://pub.dev/
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
