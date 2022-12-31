@@ -341,8 +341,12 @@ abstract class _CommonRules {
     var alt = node.getAttribute('alt') ?? '';
     var src = node.getAttribute('src') ?? '';
     var title = node.getAttribute('title') ?? '';
+    var height = node.getAttribute('height') ?? node.getAttribute('width');
+    var width = node.getAttribute('width') ?? node.getAttribute('height');
+    String encodedSrc = Uri.encodeFull(src);
+    String size = height != null ? '#${width}x$height' : "";
     var titlePart = title.isNotEmpty ? ' "' + title + '"' : '';
-    return src.isNotEmpty ? '![' + alt + ']' + '(' + src + titlePart + ')' : '';
+    return src.isNotEmpty ? '![' + alt + ']' + '(' + encodedSrc + titlePart + size + ')' : '';
   });
 }
 
