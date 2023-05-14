@@ -18,13 +18,20 @@ class Node {
     }
   }
 
-  factory Node.root(String html, {String? rootTag}) {
-    var doc = parse(html);
+  factory Node.root(dynamic input, {String? rootTag}) {
     dom.Element? root;
-    if (rootTag != null && rootTag.isNotEmpty) {
-      root = doc.getElementsByTagName(rootTag).first;
+    if (input is String) {
+      var doc = parse(input);
+      if (rootTag != null && rootTag.isNotEmpty) {
+        root = doc.getElementsByTagName(rootTag).first;
+      }
+      root ??= doc.getElementsByTagName('html').first;
+    } else {
+      root = input as dom.Element;
+      if (rootTag != null && rootTag.isNotEmpty) {
+        root = root.getElementsByTagName(rootTag).first;
+      }
     }
-    root ??= doc.getElementsByTagName('html').first;
     return Node(util.prepareRoot(root));
   }
 

@@ -11,8 +11,9 @@ final Map<String, String> _customOptions = <String, String>{};
 final _leadingNewLinesRegExp = RegExp(r'^\n*');
 final _trailingNewLinesRegExp = RegExp(r'\n*$');
 
-/// Convert [html] to markdown text.
+/// Convert [input] to markdown text.
 ///
+/// The [input] can be raw html string or html [Element](https://pub.dev/documentation/html/latest/dom/Element-class.html).
 /// The root tag which should be converted can be set with [rootTag].
 /// The image base url can be set with [imageBaseUrl].
 /// Style options can be set with [styleOptions].
@@ -36,14 +37,18 @@ final _trailingNewLinesRegExp = RegExp(r'\n*$');
 /// The [rules] parameter can be used to customize element processing.
 ///
 String convert(
-  String html, {
+  dynamic input, {
   String? rootTag,
   String? imageBaseUrl,
   Map<String, String>? styleOptions,
   List<String>? ignore,
   List<Rule>? rules,
 }) {
-  if (html.isEmpty) {
+  // the input can be html string or dom.Element
+  if (input is! String && input is! dom.Element) {
+    return '';
+  }
+  if (input is String && input.isEmpty) {
     return '';
   }
   if (imageBaseUrl != null && imageBaseUrl.isNotEmpty) {
@@ -56,7 +61,7 @@ String convert(
   if (rules != null && rules.isNotEmpty) {
     Rule.addRules(rules);
   }
-  var output = _process(Node.root(html, rootTag: rootTag));
+  var output = _process(Node.root(input, rootTag: rootTag));
   return _postProcess(output);
 }
 
