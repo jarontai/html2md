@@ -60,6 +60,28 @@ String convert(
   return _postProcess(output);
 }
 
+String fromDom(
+  dom.Element element, {
+  String? rootTag,
+  String? imageBaseUrl,
+  Map<String, String>? styleOptions,
+  List<String>? ignore,
+  List<Rule>? rules,
+}) {
+  if (imageBaseUrl != null && imageBaseUrl.isNotEmpty) {
+    _customOptions['imageBaseUrl'] = imageBaseUrl;
+  }
+  updateStyleOptions(styleOptions);
+  if (ignore != null && ignore.isNotEmpty) {
+    Rule.addIgnore(ignore);
+  }
+  if (rules != null && rules.isNotEmpty) {
+    Rule.addRules(rules);
+  }
+  var output = _process(Node.from(element));
+  return _postProcess(output);
+}
+
 String _escape(String input) {
   return input
       .replaceAllMapped(RegExp(r'\\(\S)'),

@@ -28,6 +28,10 @@ class Node {
     return Node(util.prepareRoot(root));
   }
 
+  factory Node.from(dom.Element e) {
+    return Node(util.prepareRoot(e));
+  }
+
   int get childNum => _el != null ? _el!.children.length : 0;
 
   String get className => _el?.className ?? '';
