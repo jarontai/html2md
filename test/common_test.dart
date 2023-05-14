@@ -161,7 +161,8 @@ print('Hello, world');
     test('Element Test', () {
       final doc = parser.parse(ignoreHtml);
       final body = doc.body;
-      expect(html2md.convert(body), '''Hello''');
+      body?.innerHtml = body.innerHtml + " World";
+      expect(html2md.convert(body), '''Hello World''');
     });
   });
 }
