@@ -158,7 +158,7 @@ print('Hello, world');
       );
     });
 
-    test('Element Test', () {
+    test('Html Node Test', () {
       final doc = parser.parse(ignoreHtml);
       final body = doc.body;
       body?.innerHtml = body.innerHtml + " World";

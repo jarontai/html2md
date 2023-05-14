@@ -13,7 +13,7 @@ final _trailingNewLinesRegExp = RegExp(r'\n*$');
 
 /// Convert [input] to markdown text.
 ///
-/// The [input] can be raw html string or html [Element](https://pub.dev/documentation/html/latest/dom/Element-class.html).
+/// The [input] can be raw html string or html [Node](https://pub.dev/documentation/html/latest/dom/Node-class.html).
 /// The root tag which should be converted can be set with [rootTag].
 /// The image base url can be set with [imageBaseUrl].
 /// Style options can be set with [styleOptions].
@@ -44,8 +44,8 @@ String convert(
   List<String>? ignore,
   List<Rule>? rules,
 }) {
-  // the input can be html string or dom.Element
-  if (input is! String && input is! dom.Element) {
+  // the input can be html string or dom.Node
+  if (input is! String && input is! dom.Node) {
     return '';
   }
   if (input is String && input.isEmpty) {

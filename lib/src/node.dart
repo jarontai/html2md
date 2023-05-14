@@ -19,7 +19,7 @@ class Node {
   }
 
   factory Node.root(dynamic input, {String? rootTag}) {
-    dom.Element? root;
+    dom.Node? root;
     if (input is String) {
       var doc = parse(input);
       if (rootTag != null && rootTag.isNotEmpty) {
@@ -27,10 +27,7 @@ class Node {
       }
       root ??= doc.getElementsByTagName('html').first;
     } else {
-      root = input as dom.Element;
-      if (rootTag != null && rootTag.isNotEmpty) {
-        root = root.getElementsByTagName(rootTag).first;
-      }
+      root = input as dom.Node;
     }
     return Node(util.prepareRoot(root));
   }
