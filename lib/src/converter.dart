@@ -36,16 +36,13 @@ final _trailingNewLinesRegExp = RegExp(r'\n*$');
 /// The [rules] parameter can be used to customize element processing.
 ///
 String convert(
-  String html, {
+  Object input, {
   String? rootTag,
   String? imageBaseUrl,
   Map<String, String>? styleOptions,
   List<String>? ignore,
   List<Rule>? rules,
 }) {
-  if (html.isEmpty) {
-    return '';
-  }
   if (imageBaseUrl != null && imageBaseUrl.isNotEmpty) {
     _customOptions['imageBaseUrl'] = imageBaseUrl;
   }
@@ -56,7 +53,7 @@ String convert(
   if (rules != null && rules.isNotEmpty) {
     Rule.addRules(rules);
   }
-  var output = _process(Node.root(html, rootTag: rootTag));
+  final output = _process(Node.root(input, rootTag: rootTag));
   return _postProcess(output);
 }
 
