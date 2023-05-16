@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.0
+- Make the convert function accept dom.Node as argument
+
 ## 1.2.6
 - Enhance table rules (adapted from guyplusplus/turndown-plugin-gfm)
 
