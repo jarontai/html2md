@@ -1,5 +1,6 @@
 import 'package:html2md/html2md.dart' as html2md;
 import 'package:test/test.dart';
+import 'package:html/parser.dart' as parser;
 
 void main() {
   group('Common tests', () {
@@ -155,6 +156,13 @@ print('Hello, world');
         html2md.convert(strikeHtml),
         '~~This is strike.~~~~This is s.~~~~This is del.~~ Normal Text.',
       );
+    });
+
+    test('Html Node Test', () {
+      final doc = parser.parse(ignoreHtml);
+      final body = doc.body;
+      body?.innerHtml = 'Hello World';
+      expect(html2md.convert(body!), '''Hello World''');
     });
   });
 }
