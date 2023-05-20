@@ -11,8 +11,9 @@ final Map<String, String> _customOptions = <String, String>{};
 final _leadingNewLinesRegExp = RegExp(r'^\n*');
 final _trailingNewLinesRegExp = RegExp(r'\n*$');
 
-/// Convert [html] to markdown text.
+/// Convert [input] to markdown text.
 ///
+/// The [input] can be an html string or a [dom.Node](https://pub.dev/documentation/html/latest/dom/Node-class.html).
 /// The root tag which should be converted can be set with [rootTag].
 /// The image base url can be set with [imageBaseUrl].
 /// Style options can be set with [styleOptions].

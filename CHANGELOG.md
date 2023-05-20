@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.0
+- In addition to html stirng, make the `convert` function accept dom.Node as well
+
 ## 1.2.6
 - Enhance table rules (adapted from guyplusplus/turndown-plugin-gfm)
 
