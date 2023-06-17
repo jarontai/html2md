@@ -11,6 +11,7 @@ void main() {
     late String removeHtml;
     late String ignoreHtml;
     late String codeblockHtml;
+    late String multiCodeblockHtml;
     late String linkWithTitleHtml;
     late String strikeHtml;
 
@@ -51,6 +52,7 @@ void main() {
 <pre>defaultConfig{<br>...<br>minSdkVersion 15<br>...<br>}</pre>
 ''';
       codeblockHtml = '''<pre><code>print('Hello, world');</code></pre>''';
+      multiCodeblockHtml = '''<pre><code>print('Hello, world');</code><code>print('你好, 世界');</code></pre>''';
       linkWithTitleHtml =
           '<a href="https://example.com" title="Example title">Example content</a>';
       strikeHtml =
@@ -127,6 +129,19 @@ minSdkVersion 15
               styleOptions: {'codeBlockStyle': 'fenced'}),
           '''```
 print('Hello, world');
+```''');
+    });
+
+    test('Multi codeBlock fenced Test', () {
+      expect(
+          html2md.convert(multiCodeblockHtml,
+              styleOptions: {'codeBlockStyle': 'fenced'}),
+          '''```
+print('Hello, world');
+```
+
+```
+print('你好, 世界');
 ```''');
     });
 

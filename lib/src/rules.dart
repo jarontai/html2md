@@ -199,9 +199,8 @@ abstract class _CommonRules {
   static final Rule indentedCodeBlock =
       Rule('indentedCodeBlock', filterFn: (node) {
     return getStyleOption('codeBlockStyle') == 'indented' &&
-        node.nodeName == 'pre' &&
-        node.firstChild != null &&
-        node.firstChild!.nodeName == 'code';
+        node.nodeName == 'code' &&
+        node.parentElName == 'pre';
   }, replacement: (content, node) {
     var children = node.childNodes().toList();
     if (children.length == 1) {
@@ -223,9 +222,8 @@ abstract class _CommonRules {
 
   static final Rule fencedCodeBlock = Rule('fencedCodeBlock', filterFn: (node) {
     return getStyleOption('codeBlockStyle') == 'fenced' &&
-        node.nodeName == 'pre' &&
-        node.firstChild != null &&
-        node.firstChild!.nodeName == 'code';
+        node.nodeName == 'code' &&
+        node.parentElName == 'pre';
   }, replacement: (content, node) {
     var className = node.firstChild!.className;
     var languageMatched = RegExp(r'language-(\S+)').firstMatch(className);
