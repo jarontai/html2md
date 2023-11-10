@@ -263,7 +263,7 @@ abstract class _CommonRules {
     var href = node.getAttribute('href');
     var title = node.getAttribute('title') ?? '';
     var renderedTitle = title.isEmpty ? title : ' "$title"';
-    var result, reference;
+    String result, reference;
     switch (getStyleOption('linkReferenceStyle')) {
       case 'collapsed':
         result = '[' + content + '][]';
