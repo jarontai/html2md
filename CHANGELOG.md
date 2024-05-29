@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.2
+- Fix compiling warning (https://github.com/jarontai/html2md/issues/41)
+
 ## 1.3.1
 - Allows multiple `code` blocks within the same `pre` tag
 
